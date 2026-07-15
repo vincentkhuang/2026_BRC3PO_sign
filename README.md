@@ -33,6 +33,27 @@ The physical output order is determined by the control-box and patch-box connect
 - [FastLED](https://github.com/FastLED/FastLED)
 - [OctoWS2811](https://github.com/PaulStoffregen/OctoWS2811)
 
+## Code organization
+
+The sketch uses a small hardware layer plus one module per visual pattern:
+
+| Module | Responsibility |
+| --- | --- |
+| `BRC3PO_2018_Master.ino` | Arduino `setup()` and `loop()` only |
+| `Config.h` | Pin assignments, strip sizes, channel offsets, and timing constants |
+| `TeensyController.*` | Serial startup and the Teensy status LED |
+| `LedHardware.*` | OctoWS2811/FastLED initialization, LED buffer, and named strip views |
+| `Controls.*` | Potentiometer sampling and the selected color/brightness state |
+| `IdleScannerPattern.*` | Normal sign display and bouncing underline scanner |
+| `PalettePattern.*` | Rainbow flag/underline and party-palette rendering |
+| `DancePattern.*` | Alternating letter pixels and back-and-forth movement |
+| `ColorDropPattern.*` | Falling colors on the flag |
+| `DiscoStrobePattern.*` | Moving rainbow strobe dashes on the underline |
+| `LetterPatterns.*` | Shared letter fills, palette rotation, and shifting |
+| `Shows.*` | First/second show sequencing and the ten-minute scheduler |
+
+OctoWS2811 and FastLED intentionally share `LedHardware` because their setup is one hardware boundary: the Octo adapter determines how FastLED maps the single LED buffer onto eight physical channels.
+
 ## Controls
 
 | Input | Analog channel | Purpose |
@@ -56,7 +77,7 @@ After startup, the two shows alternate on a ten-minute timer.
 ## Uploading
 
 1. Install Teensy support, FastLED, and OctoWS2811 in your Arduino environment.
-2. Open `BRC3PO_2018_Master.ino`.
+2. Keep every `.ino`, `.h`, and `.cpp` file together in the sketch folder, then open `BRC3PO_2018_Master.ino`.
 3. Select the Teensy board and the correct USB port.
 4. Confirm the strip lengths, channel offsets, and potentiometer inputs match the hardware.
 5. Compile and upload the sketch.
