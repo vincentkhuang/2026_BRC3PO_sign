@@ -130,6 +130,8 @@
   const LABELS = ["B", "R", "C", "3", "P", "O"];
   const FLAG_START = 576;
   const FLAG_COUNT = 143;
+  const FLAG_POLE_X = 62;
+  const FLAG_RIGHT_X = 142;
   const UNDERLINE_START = 720;
   const UNDERLINE_COUNT = 126;
   const HEADER_BYTES = 24;
@@ -315,11 +317,11 @@
       });
     }
     const flagPath = [
-      { x: 88, y: 292 },
-      { x: 88, y: 54 },
-      { x: 172, y: 54 },
-      { x: 172, y: 116 },
-      { x: 88, y: 116 }
+      { x: FLAG_POLE_X, y: 292 },
+      { x: FLAG_POLE_X, y: 54 },
+      { x: FLAG_RIGHT_X, y: 54 },
+      { x: FLAG_RIGHT_X, y: 116 },
+      { x: FLAG_POLE_X, y: 116 }
     ];
     samplePolyline(flagPath, FLAG_COUNT).forEach((point, pixel) => {
       coordinateMap.set(FLAG_START + pixel, point);
@@ -403,7 +405,7 @@
     context.font = "500 15px system-ui";
     context.textAlign = "center";
     LABELS.forEach((label, index) => context.fillText(label, 196 + index * 132, 332));
-    context.fillText("FLAG", 88, 332);
+    context.fillText("FLAG", FLAG_POLE_X, 332);
 
     if (originsInput.checked) {
       context.strokeStyle = "#ffffff";
