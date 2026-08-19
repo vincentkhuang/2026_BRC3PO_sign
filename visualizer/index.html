@@ -117,8 +117,8 @@
   </section>
 
   <div class="options">
-    <label><input id="origins" type="checkbox" checked> Show pixel 0 markers</label>
-    <span>Approximate geometry; LED counts, colors, timing, fades, and sequence come from the C++ firmware.</span>
+    <label><input id="origins" type="checkbox" checked> Show strip start markers</label>
+    <span>Photo-matched block geometry; LED counts, colors, timing, fades, and sequence come from the C++ firmware.</span>
   </div>
   <div id="message" class="message" role="status"></div>
 </main>
@@ -164,8 +164,12 @@
       total += length;
     }
     const samples = [];
+    const closed = points.length > 2 &&
+      points[0].x === points[points.length - 1].x &&
+      points[0].y === points[points.length - 1].y;
     for (let sample = 0; sample < count; sample += 1) {
-      const target = (sample / Math.max(1, count - 1)) * total;
+      const denominator = Math.max(1, closed ? count : count - 1);
+      const target = (sample / denominator) * total;
       let walked = 0;
       let segment = 0;
       while (segment < lengths.length - 1 && walked + lengths[segment] < target) {
@@ -188,39 +192,120 @@
     });
   }
 
-  function glyphPath(label) {
-    if (label === "B") return [
-      {x:0,y:1},{x:0,y:0},{x:.38,y:0},{x:.58,y:.08},{x:.58,y:.28},
-      {x:.38,y:.43},{x:0,y:.43},{x:.4,y:.43},{x:.62,y:.56},{x:.62,y:.82},
-      {x:.4,y:1},{x:0,y:1}
-    ];
-    if (label === "R") return [
-      {x:0,y:1},{x:0,y:0},{x:.38,y:0},{x:.6,y:.1},{x:.6,y:.3},
-      {x:.38,y:.44},{x:0,y:.44},{x:.32,y:.44},{x:.68,y:1}
-    ];
-    if (label === "C") return arcPoints(.48, .5, .48, .5, -.72, -5.56, 64);
-    if (label === "3") {
-      const upper = arcPoints(.22, .26, .44, .26, 2.3, 6.2, 34);
-      const lower = arcPoints(.22, .74, .44, .26, .08, 3.98, 34);
-      return upper.concat(lower);
+  function pathLength(points) {
+    let total = 0;
+    for (let index = 1; index < points.length; index += 1) {
+      total += Math.hypot(
+        points[index].x - points[index - 1].x,
+        points[index].y - points[index - 1].y
+      );
     }
-    if (label === "P") return [
-      {x:0,y:1},{x:0,y:0},{x:.38,y:0},{x:.6,y:.1},{x:.6,y:.3},
-      {x:.38,y:.44},{x:0,y:.44}
-    ];
-    return arcPoints(.5, .5, .48, .5, -Math.PI / 2, Math.PI * 1.5, 72);
+    return total;
+  }
+
+  function glyphPaths(label) {
+    if (label === "B") return {
+      outer: [[
+        {x:.08,y:1},{x:.08,y:0},{x:.48,y:0},{x:.66,y:.05},{x:.76,y:.16},
+        {x:.76,y:.34},{x:.68,y:.44},{x:.56,y:.5},{x:.69,y:.55},{x:.79,y:.66},
+        {x:.79,y:.84},{x:.69,y:.95},{x:.5,y:1},{x:.08,y:1}
+      ]],
+      inner: [[
+        {x:.27,y:.13},{x:.47,y:.13},{x:.57,y:.18},{x:.57,y:.32},
+        {x:.47,y:.38},{x:.27,y:.38},{x:.27,y:.13}
+      ], [
+        {x:.27,y:.61},{x:.48,y:.61},{x:.59,y:.67},{x:.59,y:.82},
+        {x:.48,y:.87},{x:.27,y:.87},{x:.27,y:.61}
+      ]]
+    };
+    if (label === "R") return {
+      outer: [[
+        {x:.08,y:1},{x:.08,y:0},{x:.48,y:0},{x:.67,y:.06},{x:.76,y:.17},
+        {x:.76,y:.33},{x:.67,y:.44},{x:.54,y:.5},{x:.86,y:1},{x:.65,y:1},
+        {x:.36,y:.53},{x:.27,y:.53},{x:.27,y:1},{x:.08,y:1}
+      ]],
+      inner: [[
+        {x:.27,y:.13},{x:.46,y:.13},{x:.56,y:.18},{x:.56,y:.33},
+        {x:.46,y:.39},{x:.27,y:.39},{x:.27,y:.13}
+      ]]
+    };
+    if (label === "C") return {
+      outer: [arcPoints(.52, .5, .48, .5, .68, Math.PI * 2 - .68, 64)],
+      inner: [arcPoints(.52, .5, .29, .34, .7, Math.PI * 2 - .7, 48)]
+    };
+    if (label === "3") return {
+      outer: [[
+        {x:.12,y:0},{x:.61,y:0},{x:.76,y:.05},{x:.84,y:.15},{x:.84,y:.38},
+        {x:.73,y:.49},{x:.84,y:.6},{x:.84,y:.85},{x:.76,y:.95},{x:.61,y:1},
+        {x:.12,y:1}
+      ]],
+      inner: [[
+        {x:.17,y:.18},{x:.51,y:.18},{x:.61,y:.22},{x:.61,y:.36},{x:.53,y:.41},
+        {x:.18,y:.41},{x:.18,y:.59},{x:.53,y:.59},{x:.61,y:.64},{x:.61,y:.78},
+        {x:.51,y:.82},{x:.17,y:.82}
+      ]]
+    };
+    if (label === "P") return {
+      outer: [[
+        {x:.08,y:1},{x:.08,y:0},{x:.48,y:0},{x:.67,y:.06},{x:.76,y:.17},
+        {x:.76,y:.34},{x:.67,y:.45},{x:.49,y:.52},{x:.27,y:.52},{x:.27,y:1},
+        {x:.08,y:1}
+      ]],
+      inner: [[
+        {x:.27,y:.13},{x:.46,y:.13},{x:.56,y:.18},{x:.56,y:.34},
+        {x:.46,y:.39},{x:.27,y:.39},{x:.27,y:.13}
+      ]]
+    };
+    return {
+      outer: [arcPoints(.5, .5, .48, .5, -Math.PI / 2, Math.PI * 1.5, 72)],
+      inner: [arcPoints(.5, .5, .29, .35, -Math.PI / 2, Math.PI * 1.5, 56)]
+    };
+  }
+
+  function samplePathGroup(paths, count) {
+    const lengths = paths.map(pathLength);
+    const totalLength = lengths.reduce((sum, length) => sum + length, 0);
+    const samples = [];
+    let remaining = count;
+    paths.forEach((path, index) => {
+      const pathsLeft = paths.length - index;
+      const allocated = pathsLeft === 1
+        ? remaining
+        : Math.max(2, Math.round(count * lengths[index] / totalLength));
+      samples.push(...samplePolyline(path, allocated));
+      remaining -= allocated;
+    });
+    return samples;
   }
 
   function buildCoordinates() {
     const coordinateMap = new Map();
+    const startMarkers = [];
     LABELS.forEach((label, index) => {
       const x = 155 + index * 132;
       const y = 54;
       const width = 82;
       const height = 190;
-      const path = glyphPath(label).map(point => ({ x: x + point.x * width, y: y + point.y * height }));
-      const samples = samplePolyline(path, PIXEL_COUNTS[index]);
+      const groups = glyphPaths(label);
+      const scalePaths = paths => paths.map(path => path.map(point => ({
+        x: x + point.x * width,
+        y: y + point.y * height
+      })));
+      const outerPaths = scalePaths(groups.outer);
+      const innerPaths = scalePaths(groups.inner);
+      const outerLength = outerPaths.reduce((sum, path) => sum + pathLength(path), 0);
+      const innerLength = innerPaths.reduce((sum, path) => sum + pathLength(path), 0);
+      const outerCount = Math.max(2, Math.round(
+        PIXEL_COUNTS[index] * outerLength / (outerLength + innerLength)
+      ));
+      const innerCount = PIXEL_COUNTS[index] - outerCount;
+      const samples = [
+        ...samplePathGroup(outerPaths, outerCount),
+        ...samplePathGroup(innerPaths, innerCount)
+      ];
       samples.forEach((point, pixel) => coordinateMap.set(PIXEL_STARTS[index] + pixel, point));
+      startMarkers.push({ pixel: PIXEL_STARTS[index], label: "0" });
+      startMarkers.push({ pixel: PIXEL_STARTS[index] + outerCount, label: "IN" });
     });
 
     for (let pixel = 0; pixel < UNDERLINE_COUNT; pixel += 1) {
@@ -235,11 +320,12 @@
         y: 292 - (pixel / (FLAG_COUNT - 1)) * 222
       });
     }
-    return coordinateMap;
+    startMarkers.push({ pixel: FLAG_START, label: "0" });
+    startMarkers.push({ pixel: UNDERLINE_START, label: "0" });
+    return { coordinateMap, startMarkers };
   }
 
-  const coordinates = buildCoordinates();
-  const originPixels = [...PIXEL_STARTS, FLAG_START, UNDERLINE_START];
+  const { coordinateMap: coordinates, startMarkers } = buildCoordinates();
 
   function parseRecording(buffer) {
     const view = new DataView(buffer);
@@ -319,13 +405,13 @@
       context.strokeStyle = "#ffffff";
       context.fillStyle = "#ffffff";
       context.font = "500 11px system-ui";
-      originPixels.forEach(pixel => {
-        const point = coordinates.get(pixel);
+      startMarkers.forEach(marker => {
+        const point = coordinates.get(marker.pixel);
         if (!point) return;
         context.beginPath();
         context.arc(point.x, point.y, 6, 0, Math.PI * 2);
         context.stroke();
-        context.fillText("0", point.x + 10, point.y - 7);
+        context.fillText(marker.label, point.x + 12, point.y - 7);
       });
     }
   }
