@@ -6,6 +6,7 @@
 #include "DiscoStrobePattern.h"
 #include "LedHardware.h"
 #include "LetterPatterns.h"
+#include "NewPatternsShow.h"
 #include "PalettePattern.h"
 
 namespace {
@@ -87,21 +88,28 @@ void runSecondShow() {
 
 void updateShows() {
   static bool startupPending = true;
-  static bool runFirstNext = true;
+  static uint8_t nextShow = 0;
 
   if (startupPending) {
     fill_solid(leds, NUM_LEDS, CRGB::Black);
+    if (RUN_NEW_PATTERN_PREVIEW_AT_STARTUP) runNewPatternsShow();
     runFirstShow();
     runSecondShow();
     startupPending = false;
   }
 
   EVERY_N_MINUTES(10) {
-    if (runFirstNext) {
-      runFirstShow();
-    } else {
-      runSecondShow();
+    switch (nextShow) {
+      case 0:
+        runFirstShow();
+        break;
+      case 1:
+        runSecondShow();
+        break;
+      default:
+        runNewPatternsShow();
+        break;
     }
-    runFirstNext = !runFirstNext;
+    nextShow = (nextShow + 1) % 3;
   }
 }
