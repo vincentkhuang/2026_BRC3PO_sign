@@ -1,5 +1,6 @@
 #include "ProtocolGoldPattern.h"
 
+#include "PatternTiming.h"
 #include "SignLayout.h"
 
 namespace {
@@ -32,6 +33,6 @@ void runProtocolGoldPattern() {
     }
 
     LEDS.show();
-    LEDS.delay(30);
+    patternDelay(30);
   }
 }

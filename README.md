@@ -120,6 +120,10 @@ The new-pattern show uses a structured random sequence:
 
 Every kinetic pattern plays exactly once per cycle. The shuffle also prevents the last kinetic pattern from one cycle from becoming the first kinetic pattern in the next cycle. Fade Out leaves the installation fully black so the next Power-Up has a clean starting point.
 
+The coordinated patterns deliberately vary their color treatment: Power-Up and Blackout Reveal use full-sign rainbows, Typewriter uses a cool-shifted rainbow, Signal Relay and Letter Domino rotate colors as they travel, Comet Letters assigns a different rainbow hue to each letter, and Protocol Gold keeps its gold/white signature. Fade Out preserves whichever colors are already showing as it takes the sign to black.
+
+All coordinated-pattern delays pass through `PatternTiming.h`, where `PATTERN_TIME_SCALE_PERCENT` is set to `110`. This makes the complete show 10% slower while carrying fractional milliseconds between short animation frames so their rounding does not change the overall speed.
+
 ## Uploading
 
 1. Install Teensy support, FastLED, and OctoWS2811 in your Arduino environment.

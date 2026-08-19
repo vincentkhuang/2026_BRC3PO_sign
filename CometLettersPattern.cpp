@@ -1,12 +1,10 @@
 #include "CometLettersPattern.h"
 
+#include "PatternColors.h"
+#include "PatternTiming.h"
 #include "SignLayout.h"
 
 namespace {
-const CRGB LETTER_COLORS[LETTER_COUNT] = {
-    CRGB::Red, CRGB::Orange, CRGB::Yellow,
-    CRGB::Green, CRGB::Blue, CRGB::Purple};
-
 void drawComet(uint8_t letter, int head, int tailLength, CRGB color) {
   int start = letterStart(letter);
   int length = letterLength(letter);
@@ -29,7 +27,7 @@ void runCometLettersPattern() {
   fill_solid(Strip_F, NUM_F, CRGB::Black);
 
   for (uint8_t letter = 0; letter < LETTER_COUNT; ++letter) {
-    CRGB color = LETTER_COLORS[letter];
+    CRGB color = signRainbowColor(letter, LETTER_COUNT);
     int length = letterLength(letter);
     int tailLength = length / 10;
     if (tailLength < 8) tailLength = 8;
@@ -43,14 +41,14 @@ void runCometLettersPattern() {
     for (int head = 0; head < length + tailLength; ++head) {
       drawComet(letter, head % length, tailLength, color);
       LEDS.show();
-      LEDS.delay(16);
+      patternDelay(16);
     }
 
     fillLetter(letter, color);
     LEDS.show();
-    LEDS.delay(180);
+    patternDelay(180);
     fillLetter(letter, CRGB::Black);
   }
 
-  fill_solid(Strip_F, NUM_F, CRGB::Red);
+  fillSignRainbow(Strip_F, NUM_F, 224);
 }
