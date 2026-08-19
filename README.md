@@ -161,7 +161,7 @@ SEED=123 ./visualizer/run_visualizer.sh
 PORT=9000 ./visualizer/run_visualizer.sh
 ```
 
-The player offers pattern selection, play/pause, timeline scrubbing, playback speed, brightness, and strip-start markers. Each letter is drawn as a block-letter exterior plus an interior run based on the installed sign. Exact LED counts and buffer offsets come from the firmware; the visualizer distributes each letter's pixels between its two paths in proportion to their drawn lengths because the physical per-strip counts and start coordinates are not yet recorded. Colors, timing, fades, and pattern sequencing come from the firmware itself.
+The player offers pattern selection, play/pause, timeline scrubbing, playback speed, brightness, and strip-start markers. Each letter is drawn as a block-letter exterior plus an interior run, and the mailbox flag includes its vertical pole and square top, based on the installed sign. Exact LED counts and buffer offsets come from the firmware; the visualizer distributes each letter's pixels between its two paths in proportion to their drawn lengths because the physical per-strip counts and start coordinates are not yet recorded. Colors, timing, fades, and pattern sequencing come from the firmware itself.
 
 ## Project status
 

@@ -314,12 +314,16 @@
         y: 292
       });
     }
-    for (let pixel = 0; pixel < FLAG_COUNT; pixel += 1) {
-      coordinateMap.set(FLAG_START + pixel, {
-        x: 88,
-        y: 292 - (pixel / (FLAG_COUNT - 1)) * 222
-      });
-    }
+    const flagPath = [
+      { x: 88, y: 292 },
+      { x: 88, y: 54 },
+      { x: 172, y: 54 },
+      { x: 172, y: 116 },
+      { x: 88, y: 116 }
+    ];
+    samplePolyline(flagPath, FLAG_COUNT).forEach((point, pixel) => {
+      coordinateMap.set(FLAG_START + pixel, point);
+    });
     startMarkers.push({ pixel: FLAG_START, label: "0" });
     startMarkers.push({ pixel: UNDERLINE_START, label: "0" });
     return { coordinateMap, startMarkers };
