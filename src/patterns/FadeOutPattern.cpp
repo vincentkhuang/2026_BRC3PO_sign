@@ -1,6 +1,6 @@
 #include "FadeOutPattern.h"
 
-#include "LedHardware.h"
+#include "../core/LedHardware.h"
 #include "PatternTiming.h"
 
 void runFadeOutPattern() {

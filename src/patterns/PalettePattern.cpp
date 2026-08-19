@@ -1,6 +1,6 @@
 #include "PalettePattern.h"
 
-#include "LedHardware.h"
+#include "../core/LedHardware.h"
 #include "LetterPatterns.h"
 
 void renderPalettePattern(uint8_t colorIndex) {

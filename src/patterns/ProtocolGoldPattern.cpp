@@ -1,7 +1,7 @@
 #include "ProtocolGoldPattern.h"
 
 #include "PatternTiming.h"
-#include "SignLayout.h"
+#include "../core/SignLayout.h"
 
 namespace {
 constexpr uint16_t FRAME_COUNT = 300;

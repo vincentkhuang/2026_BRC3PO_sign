@@ -1,6 +1,6 @@
 #include "ColorDropPattern.h"
 
-#include "LedHardware.h"
+#include "../core/LedHardware.h"
 
 namespace {
 constexpr int COLOR_COUNT = 15;

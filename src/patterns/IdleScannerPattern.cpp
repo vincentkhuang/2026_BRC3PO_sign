@@ -1,8 +1,9 @@
 #include "IdleScannerPattern.h"
 
-#include "Config.h"
-#include "Controls.h"
-#include "LedHardware.h"
+#include "../core/Config.h"
+#include "../core/Controls.h"
+#include "../core/LedHardware.h"
+#include "../core/SignTransitions.h"
 #include "LetterPatterns.h"
 
 namespace {
@@ -13,17 +14,28 @@ int direction = 1;
 constexpr int EYE_PADDING = 10;
 const CRGB EYE_COLOR = CRGB::White;
 const CRGB FLAG_COLOR = CRGB::Red;
+constexpr uint8_t ENTRY_FADE_FRAME_COUNT = 24;
+constexpr unsigned long ENTRY_FADE_FRAME_MS = 20;
+bool entryPending = true;
 }  // namespace
 
 void initIdleScannerPattern() {
   previousFrameTime = millis();
+  entryPending = true;
 }
 
 void renderIdleScannerPattern() {
   readControls();
+  if (entryPending) captureSignTransitionSource();
   setLetterColor(currentColor);
   fill_solid(Strip_F, NUM_F, FLAG_COLOR);
-  LEDS.show();
+  if (entryPending) {
+    fill_solid(Strip_U, NUM_U, CRGB::Black);
+    fadeIntoCurrentSignFrame(ENTRY_FADE_FRAME_COUNT, ENTRY_FADE_FRAME_MS);
+    entryPending = false;
+  } else {
+    LEDS.show();
+  }
 
   unsigned long now = millis();
   if (now - previousFrameTime >= SCANNER_DELAY_MS) {
@@ -58,4 +70,3 @@ void renderIdleScannerPattern() {
   LEDS.show();
   LEDS.delay(IDLE_FRAME_LENGTH_MS);
 }
-

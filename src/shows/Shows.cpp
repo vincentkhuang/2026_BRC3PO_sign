@@ -1,14 +1,16 @@
 #include "Shows.h"
 
-#include "ColorDropPattern.h"
-#include "Controls.h"
-#include "DancePattern.h"
-#include "DiscoStrobePattern.h"
-#include "LedHardware.h"
-#include "LetterPatterns.h"
+#include "../core/Config.h"
+#include "../core/Controls.h"
+#include "../core/LedHardware.h"
+#include "../core/SignTransitions.h"
+#include "../patterns/ColorDropPattern.h"
+#include "../patterns/DancePattern.h"
+#include "../patterns/DiscoStrobePattern.h"
+#include "../patterns/IdleScannerPattern.h"
+#include "../patterns/LetterPatterns.h"
+#include "../patterns/PalettePattern.h"
 #include "NewPatternsShow.h"
-#include "PalettePattern.h"
-#include "SignTransitions.h"
 
 namespace {
 constexpr uint8_t FIRST_SHOW_TIME_SCALE_PERCENT = 49;
@@ -121,29 +123,33 @@ void runLegacySecondShow() {
 }
 
 void updateShows() {
-  static bool startupPending = true;
+  static bool schedulerInitialized = false;
   static uint8_t nextShow = 0;
+  static unsigned long idleStartedAt = 0;
 
-  if (startupPending) {
-    fill_solid(leds, NUM_LEDS, CRGB::Black);
-    if (RUN_NEW_PATTERN_PREVIEW_AT_STARTUP) runNewPatternsShow();
-    runLegacyFirstShow();
-    runLegacySecondShow();
-    startupPending = false;
+  if (!schedulerInitialized) {
+    idleStartedAt = millis();
+    schedulerInitialized = true;
+    return;
   }
 
-  EVERY_N_MINUTES(10) {
-    switch (nextShow) {
-      case 0:
-        runLegacyFirstShow();
-        break;
-      case 1:
-        runLegacySecondShow();
-        break;
-      default:
-        runNewPatternsShow();
-        break;
-    }
-    nextShow = (nextShow + 1) % 3;
+  if (millis() - idleStartedAt < IDLE_SCANNER_DURATION_MS) return;
+
+  switch (nextShow) {
+    case 0:
+      runNewPatternsShow();
+      break;
+    case 1:
+      runLegacyFirstShow();
+      break;
+    default:
+      runLegacySecondShow();
+      break;
   }
+  nextShow = (nextShow + 1) % 3;
+
+  // Resume the resting animation for a complete configured interval before
+  // the next show. Reinitialization also fades smoothly into Idle Scanner.
+  initIdleScannerPattern();
+  idleStartedAt = millis();
 }

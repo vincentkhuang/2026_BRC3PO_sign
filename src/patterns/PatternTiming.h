@@ -1,7 +1,7 @@
 #pragma once
 
-#include "LedHardware.h"
-#include "SignTransitions.h"
+#include "../core/LedHardware.h"
+#include "../core/SignTransitions.h"
 
 // Run every coordinated-pattern hold and animation frame 20% slower than the
 // original preview values. Keeping the scale here makes the whole show easy to

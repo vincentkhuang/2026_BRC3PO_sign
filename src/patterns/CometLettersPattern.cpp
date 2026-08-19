@@ -2,7 +2,7 @@
 
 #include "PatternColors.h"
 #include "PatternTiming.h"
-#include "SignLayout.h"
+#include "../core/SignLayout.h"
 
 namespace {
 uint8_t nextAccentHue = 0;
