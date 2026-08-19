@@ -43,6 +43,7 @@ The sketch uses a small hardware layer plus one module per visual pattern:
 | `Config.h` | Pin assignments, strip sizes, channel offsets, and timing constants |
 | `TeensyController.*` | Serial startup and the Teensy status LED |
 | `LedHardware.*` | OctoWS2811/FastLED initialization, LED buffer, and named strip views |
+| `SignTransitions.*` | Shared whole-sign fades and cross-pattern blending |
 | `Controls.*` | Potentiometer sampling and the selected color/brightness state |
 | `IdleScannerPattern.*` | Normal sign display and bouncing underline scanner |
 | `PalettePattern.*` | Rainbow flag/underline and party-palette rendering |
@@ -107,7 +108,7 @@ At startup, the controller runs both programmed shows:
 
 After startup, all three shows rotate on a ten-minute timer. To skip the new-pattern preview at power-up while keeping it in the timed rotation, set `RUN_NEW_PATTERN_PREVIEW_AT_STARTUP` to `false` in `Config.h`.
 
-The letter strips are assumed to advance clockwise as their pixel indices increase. Blackout Reveal and Comet Letters begin at each strip's installed pixel `0`; no physical or software start-point alignment is required. Whenever a coordinated pattern grows the underline from partial or dark to fully illuminated, the fill travels from the sign's right edge toward its left edge. Letter Domino remains the intentional exception because each underline segment is coupled directly to its letter's reading-order hit.
+Every letter's pixel `0` is installed at the bottom-left of its exterior run, and pixel indices advance clockwise from there. Blackout Reveal and Comet Letters use that physical order directly; no software start-point alignment is required. Coordinated partial-to-full underline fills travel from the sign's right edge toward its left edge except for Power-Up, whose progress bar deliberately fills left to right, and Letter Domino, whose underline segments are coupled directly to their reading-order letters.
 
 The new-pattern show uses a structured random sequence:
 
@@ -118,7 +119,7 @@ The new-pattern show uses a structured random sequence:
 5. Protocol Gold
 6. Fade Out
 
-Every kinetic pattern plays exactly once per cycle. The shuffle also prevents the last kinetic pattern from one cycle from becoming the first kinetic pattern in the next cycle. Fade Out leaves the installation fully black so the next Power-Up has a clean starting point.
+Every kinetic pattern plays exactly once per cycle. The shuffle also prevents the last kinetic pattern from one cycle from becoming the first kinetic pattern in the next cycle. Shared transitions fade any abrupt whole-sign change from illuminated to dark or dark to illuminated; progressive traces, sweeps, and fills remain unchanged, and intentional flashes and strobes stay crisp. Fade Out leaves the installation fully black so the next Power-Up has a clean starting point.
 
 The coordinated patterns deliberately vary their color treatment: Power-Up and Blackout Reveal use full-sign rainbows; Typewriter uses one consistent hue for an entire word and advances to a different hue on its next run; Signal Relay and Letter Domino rotate colors as they travel; every Comet Letter traces the same cohesive rainbow progression twice around its clockwise path, with a dark reset before the second pass accumulates into the completed letter. Comet Letters keeps its full underline and flag on one solid matching accent color, then advances that color on its next run. Protocol Gold fades smoothly from the previous pattern into its bright gold underline and white sparkles over a full-brightness background color that changes between runs. Fade Out preserves whichever colors are already showing as it takes the sign to black.
 
@@ -196,7 +197,7 @@ PORT=9000 ./visualizer/run_visualizer.sh
 CXX=g++ ./visualizer/run_visualizer.sh
 ```
 
-Each letter is drawn as a block-letter exterior plus an interior run, and the mailbox flag includes its vertical pole and square top, based on the installed sign. Exact LED counts and buffer offsets come from the firmware; the visualizer distributes each letter's pixels between its two paths in proportion to their drawn lengths because the physical per-strip counts and start coordinates are not yet recorded. Colors, timing, fades, and pattern sequencing come from the firmware itself.
+Each letter is drawn as a block-letter exterior plus an interior run, with pixel `0` shown at the known bottom-left exterior start, and the mailbox flag includes its vertical pole and square top. Exact LED counts and buffer offsets come from the firmware; the visualizer distributes each letter's remaining pixels between its two paths in proportion to their drawn lengths because the exact exterior/interior split counts are not yet recorded. Colors, timing, fades, and pattern sequencing come from the firmware itself.
 
 Legacy First Show and Legacy Second Show are exposed through thin firmware wrappers and recorded by the same simulator executable as the coordinated patterns. Each legacy entry crossfades through 24 frames into its first intended look, preserving the configured hardware brightness while avoiding a hard cut. Palette and Dance remain in Legacy First Show; Color Drop and Disco Strobe remain in Legacy Second Show, so the coordinated show does not duplicate them. Color Drop sends each falling light through the complete flag path from LED `142` through LED `0`, so the pole and square participate in the same animation. Legacy First uses a `49%` time scale after two successive 30% speed increases; Legacy Second uses a `70%` time scale. Each show's total window and animation delays are scaled together, while Legacy Second also scales its frame interval and color-change timers, so the complete content plays faster instead of ending early. The coordinated-pattern timing scale does not alter them. Legacy Second Show produces a large local recording because it retains roughly 6,000 animation frames. Generated recordings stay inside the ignored `visualizer/generated/` directory.
 

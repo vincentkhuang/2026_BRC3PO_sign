@@ -12,10 +12,12 @@ void runTypewriterPattern() {
   CRGB runColor = CHSV(nextTypewriterHue, 235, 255);
   nextTypewriterHue += TYPEWRITER_HUE_STEP;
 
+  captureSignTransitionSource();
   clearAllLetters();
   fill_solid(Strip_U, NUM_U, CRGB::Black);
   // Keep the mailbox flag visible for the entire typing sequence.
   fill_solid(Strip_F, NUM_F, runColor);
+  fadeIntoCurrentPatternFrame();
 
   for (uint8_t letter = 0; letter < LETTER_COUNT; ++letter) {
     fill_solid(Strip_U, NUM_U, CRGB::Black);

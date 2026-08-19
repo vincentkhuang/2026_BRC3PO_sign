@@ -2,6 +2,7 @@
 
 #include "LedHardware.h"
 #include "LetterPatterns.h"
+#include "SignTransitions.h"
 
 namespace {
 void danceDelay(unsigned long milliseconds, uint8_t timeScalePercent) {
@@ -10,6 +11,7 @@ void danceDelay(unsigned long milliseconds, uint8_t timeScalePercent) {
 }  // namespace
 
 void runDancePattern(int cycles, uint8_t timeScalePercent) {
+  captureSignTransitionSource();
   for (int i = 0; i < NUM_B; i += 2) leds[B_START + i] = CRGB::Black;
   for (int i = 0; i < NUM_R; i += 2) leds[R_START + i] = CRGB::Black;
   for (int i = 0; i < NUM_C; i += 2) leds[C_START + i] = CRGB::Black;
@@ -17,7 +19,7 @@ void runDancePattern(int cycles, uint8_t timeScalePercent) {
   for (int i = 0; i < NUM_P; i += 2) leds[P_START + i] = CRGB::Black;
   for (int i = 0; i < NUM_O; i += 2) leds[O_START + i] = CRGB::Black;
 
-  LEDS.show();
+  fadeIntoCurrentSignFrame(16, 25, timeScalePercent);
   danceDelay(1000, timeScalePercent);
 
   for (int i = 0; i < cycles; ++i) {

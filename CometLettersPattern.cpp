@@ -49,9 +49,11 @@ void runCometLettersPattern() {
   CRGB accentColor = CHSV(nextAccentHue, 235, 255);
   nextAccentHue += ACCENT_HUE_STEP;
 
+  captureSignTransitionSource();
   clearAllLetters();
   fill_solid(Strip_U, NUM_U, accentColor);
   fill_solid(Strip_F, NUM_F, accentColor);
+  fadeIntoCurrentPatternFrame();
 
   for (uint8_t letter = 0; letter < LETTER_COUNT; ++letter) {
     int length = letterLength(letter);

@@ -11,9 +11,7 @@ void fadeUnderline(uint8_t amount) {
 }  // namespace
 
 void runSignalRelayPattern() {
-  clearAllLetters();
-  fill_solid(Strip_U, NUM_U, CRGB::Black);
-  fill_solid(Strip_F, NUM_F, CRGB::Black);
+  fadePatternToBlack();
 
   // The mailbox flag charges from its installed pixel zero toward its end.
   for (int position = 0; position < NUM_F; position += 2) {

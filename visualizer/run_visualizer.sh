@@ -41,6 +41,7 @@ echo "Building the native pattern recorder…"
   "$SCRIPT_DIR/sim/FastLED.cpp" \
   "$SCRIPT_DIR/sim/main.cpp" \
   "$ROOT_DIR/LedHardware.cpp" \
+  "$ROOT_DIR/SignTransitions.cpp" \
   "$ROOT_DIR/SignLayout.cpp" \
   "$ROOT_DIR/Controls.cpp" \
   "$ROOT_DIR/LetterPatterns.cpp" \

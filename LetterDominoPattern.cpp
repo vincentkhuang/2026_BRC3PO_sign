@@ -9,10 +9,12 @@ void runLetterDominoPattern() {
 
   for (uint8_t cycle = 0; cycle < CYCLES; ++cycle) {
     uint8_t hueOffset = cycle * 43;
+    if (cycle == 0) captureSignTransitionSource();
     clearAllLetters();
     fill_solid(Strip_U, NUM_U, CRGB::Black);
     fill_solid(Strip_F, NUM_F,
                signRainbowColor(cycle, CYCLES, hueOffset));
+    if (cycle == 0) fadeIntoCurrentPatternFrame();
 
     for (uint8_t letter = 0; letter < LETTER_COUNT; ++letter) {
       CRGB letterColor = signRainbowColor(letter, LETTER_COUNT, hueOffset);

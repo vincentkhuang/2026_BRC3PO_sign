@@ -28,8 +28,9 @@ void fillRainbowSign() {
 }  // namespace
 
 void runBlackoutRevealPattern() {
+  captureSignTransitionSource();
   fillRainbowSign();
-  LEDS.show();
+  fadeIntoCurrentPatternFrame();
   patternDelay(600);
 
   // Sweep darkness clockwise around every letter at the same normalized rate.

@@ -8,6 +8,7 @@
 #include "LetterPatterns.h"
 #include "NewPatternsShow.h"
 #include "PalettePattern.h"
+#include "SignTransitions.h"
 
 namespace {
 constexpr uint8_t FIRST_SHOW_TIME_SCALE_PERCENT = 49;
@@ -23,48 +24,9 @@ constexpr unsigned long DROP_COLOR_INTERVAL_MS =
 constexpr unsigned long LETTER_COLOR_INTERVAL_MS =
     1000UL * SECOND_SHOW_TIME_SCALE_PERCENT / 100UL;
 constexpr uint8_t LEGACY_FADE_FRAME_COUNT = 24;
-CRGB legacyFadeSource[NUM_LEDS];
-CRGB legacyFadeTarget[NUM_LEDS];
-
-uint8_t blendChannel(uint8_t start, uint8_t target, uint8_t amount) {
-  return static_cast<uint8_t>(
-      (static_cast<uint16_t>(start) * (255 - amount) +
-       static_cast<uint16_t>(target) * amount + 127) /
-      255);
-}
-
-CRGB blendColor(CRGB start, CRGB target, uint8_t amount) {
-  return CRGB(blendChannel(start.r, target.r, amount),
-              blendChannel(start.g, target.g, amount),
-              blendChannel(start.b, target.b, amount));
-}
 
 void legacyDelay(unsigned long milliseconds, uint8_t timeScalePercent) {
   LEDS.delay(milliseconds * timeScalePercent / 100UL);
-}
-
-void captureLegacyFadeSource() {
-  for (int pixel = 0; pixel < NUM_LEDS; ++pixel) {
-    legacyFadeSource[pixel] = leds[pixel];
-  }
-}
-
-void fadeIntoCurrentFrame(uint8_t timeScalePercent) {
-  for (int pixel = 0; pixel < NUM_LEDS; ++pixel) {
-    legacyFadeTarget[pixel] = leds[pixel];
-  }
-
-  for (uint8_t frame = 1; frame <= LEGACY_FADE_FRAME_COUNT; ++frame) {
-    uint8_t amount =
-        static_cast<uint8_t>((static_cast<uint16_t>(frame) * 255) /
-                             LEGACY_FADE_FRAME_COUNT);
-    for (int pixel = 0; pixel < NUM_LEDS; ++pixel) {
-      leds[pixel] =
-          blendColor(legacyFadeSource[pixel], legacyFadeTarget[pixel], amount);
-    }
-    LEDS.show();
-    legacyDelay(25, timeScalePercent);
-  }
 }
 
 void delayToSyncFrameRate(uint16_t targetFrameMillis) {
@@ -90,9 +52,10 @@ void runFirstShow() {
   currentBlending = LINEARBLEND;
   static uint8_t paletteIndex = 0;
 
-  captureLegacyFadeSource();
+  captureSignTransitionSource();
   renderPalettePattern(paletteIndex++);
-  fadeIntoCurrentFrame(FIRST_SHOW_TIME_SCALE_PERCENT);
+  fadeIntoCurrentSignFrame(LEGACY_FADE_FRAME_COUNT, 25,
+                           FIRST_SHOW_TIME_SCALE_PERCENT);
   unsigned long startTime = millis();
 
   while (millis() - startTime < FIRST_SHOW_DURATION_MS) {
@@ -113,14 +76,17 @@ void runFirstShow() {
 }
 
 void runSecondShow() {
-  captureLegacyFadeSource();
+  captureSignTransitionSource();
   setLetterColor(CRGB::White);
   fill_solid(Strip_F, NUM_F, CRGB::Black);
   fill_solid(Strip_U, NUM_U, CRGB::Black);
-  fadeIntoCurrentFrame(SECOND_SHOW_TIME_SCALE_PERCENT);
+  fadeIntoCurrentSignFrame(LEGACY_FADE_FRAME_COUNT, 25,
+                           SECOND_SHOW_TIME_SCALE_PERCENT);
   legacyDelay(200, SECOND_SHOW_TIME_SCALE_PERCENT);
+  captureSignTransitionSource();
   setLetterColor(CRGB::Black);
-  LEDS.show();
+  fadeIntoCurrentSignFrame(LEGACY_FADE_FRAME_COUNT, 25,
+                           SECOND_SHOW_TIME_SCALE_PERCENT);
   legacyDelay(400, SECOND_SHOW_TIME_SCALE_PERCENT);
   flashLetters(2, SECOND_SHOW_TIME_SCALE_PERCENT);
 

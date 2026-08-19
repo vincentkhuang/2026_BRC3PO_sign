@@ -329,14 +329,19 @@
       ]]
     };
     if (label === "C") return {
-      outer: [arcPoints(.52, .5, .48, .5, .68, Math.PI * 2 - .68, 64)],
+      // Pixel zero is the lower-left exterior. Keep both open ends of the C
+      // visible while sampling its installed clockwise exterior run.
+      outer: [
+        arcPoints(.52, .5, .48, .5, Math.PI * .75, Math.PI * 2 - .68, 44),
+        arcPoints(.52, .5, .48, .5, .68, Math.PI * .75, 22)
+      ],
       inner: [arcPoints(.52, .5, .29, .34, .7, Math.PI * 2 - .7, 48)]
     };
     if (label === "3") return {
       outer: [[
-        {x:.12,y:0},{x:.61,y:0},{x:.76,y:.05},{x:.84,y:.15},{x:.84,y:.38},
-        {x:.73,y:.49},{x:.84,y:.6},{x:.84,y:.85},{x:.76,y:.95},{x:.61,y:1},
-        {x:.12,y:1}
+        {x:.12,y:1},{x:.61,y:1},{x:.76,y:.95},{x:.84,y:.85},{x:.84,y:.6},
+        {x:.73,y:.49},{x:.84,y:.38},{x:.84,y:.15},{x:.76,y:.05},{x:.61,y:0},
+        {x:.12,y:0}
       ]],
       inner: [[
         {x:.17,y:.18},{x:.51,y:.18},{x:.61,y:.22},{x:.61,y:.36},{x:.53,y:.41},
@@ -356,7 +361,7 @@
       ]]
     };
     return {
-      outer: [arcPoints(.5, .5, .48, .5, -Math.PI / 2, Math.PI * 1.5, 72)],
+      outer: [arcPoints(.5, .5, .48, .5, Math.PI * .75, Math.PI * 2.75, 72)],
       inner: [arcPoints(.5, .5, .29, .35, -Math.PI / 2, Math.PI * 1.5, 56)]
     };
   }
