@@ -1,17 +1,21 @@
 {
   "patterns": [
-    { "id": "show", "label": "Coordinated Full Show" },
-    { "id": "idle-scanner", "label": "Idle Scanner" },
-    { "id": "power-up", "label": "Power-Up" },
-    { "id": "typewriter", "label": "Typewriter" },
-    { "id": "signal-relay", "label": "Signal Relay" },
-    { "id": "letter-domino", "label": "Letter Domino" },
-    { "id": "comet-letters", "label": "Comet Letters" },
-    { "id": "blackout-reveal", "label": "Blackout Reveal" },
-    { "id": "protocol-gold", "label": "Protocol Gold" },
-    { "id": "fade-out", "label": "Fade Out" },
-    { "id": "legacy-first", "label": "Legacy First Show" },
-    { "id": "legacy-second", "label": "Legacy Second Show" }
+    { "id": "show", "label": "Coordinated Full Show", "group": "Shows" },
+    { "id": "legacy-first", "label": "Legacy First Show", "group": "Shows" },
+    { "id": "legacy-second", "label": "Legacy Second Show", "group": "Shows" },
+    { "id": "idle-scanner", "label": "Idle Scanner", "group": "Individual Patterns" },
+    { "id": "power-up", "label": "Power-Up", "group": "Individual Patterns" },
+    { "id": "typewriter", "label": "Typewriter", "group": "Individual Patterns" },
+    { "id": "signal-relay", "label": "Signal Relay", "group": "Individual Patterns" },
+    { "id": "letter-domino", "label": "Letter Domino", "group": "Individual Patterns" },
+    { "id": "comet-letters", "label": "Comet Letters", "group": "Individual Patterns" },
+    { "id": "blackout-reveal", "label": "Blackout Reveal", "group": "Individual Patterns" },
+    { "id": "protocol-gold", "label": "Protocol Gold", "group": "Individual Patterns" },
+    { "id": "fade-out", "label": "Fade Out", "group": "Individual Patterns" },
+    { "id": "palette", "label": "Palette", "group": "Individual Patterns" },
+    { "id": "dance", "label": "Dance", "group": "Individual Patterns" },
+    { "id": "color-drop", "label": "Color Drop", "group": "Individual Patterns" },
+    { "id": "disco-strobe", "label": "Disco Strobe", "group": "Individual Patterns" }
   ],
   "defaultSequence": {
     "loop": true,

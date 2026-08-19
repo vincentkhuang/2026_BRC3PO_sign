@@ -18,6 +18,19 @@ void setSynchronizedLetterPixel(int progress, bool reveal) {
   }
 }
 
+void setSynchronizedFlagPixels(int progress, bool reveal) {
+  // The flag is longer than the 141-step letter sweep, so some animation
+  // steps must advance two flag pixels. Covering the complete normalized
+  // range prevents skipped pixels from lingering during blackout or popping
+  // on only when the reveal finishes.
+  int start = (progress * NUM_F) / LONGEST_LETTER;
+  int end = ((progress + 1) * NUM_F) / LONGEST_LETTER;
+  for (int position = start; position < end; ++position) {
+    Strip_F[position] =
+        reveal ? signRainbowColor(position, NUM_F, 224) : CRGB::Black;
+  }
+}
+
 void fillRainbowSign() {
   for (uint8_t letter = 0; letter < LETTER_COUNT; ++letter) {
     fillLetter(letter, signRainbowColor(letter, LETTER_COUNT));
@@ -38,8 +51,7 @@ void runBlackoutRevealPattern() {
     setSynchronizedLetterPixel(progress, false);
     int underlinePosition = (progress * NUM_U) / LONGEST_LETTER;
     if (underlinePosition < NUM_U) Strip_U[underlinePosition] = CRGB::Black;
-    int flagPosition = (progress * NUM_F) / LONGEST_LETTER;
-    if (flagPosition < NUM_F) Strip_F[flagPosition] = CRGB::Black;
+    setSynchronizedFlagPixels(progress, false);
     LEDS.show();
     patternDelay(12);
   }
@@ -57,10 +69,7 @@ void runBlackoutRevealPattern() {
       Strip_U[reversePosition] =
           signRainbowColor(reversePosition, NUM_U);
     }
-    int flagPosition = (progress * NUM_F) / LONGEST_LETTER;
-    if (flagPosition < NUM_F) {
-      Strip_F[flagPosition] = signRainbowColor(flagPosition, NUM_F, 224);
-    }
+    setSynchronizedFlagPixels(progress, true);
     LEDS.show();
     patternDelay(12);
   }

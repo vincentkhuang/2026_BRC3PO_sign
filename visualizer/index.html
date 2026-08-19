@@ -254,7 +254,7 @@
   let sequenceRepeat = 1;
   let advancingSequence = false;
 
-  function samplePolyline(points, count) {
+  function samplePolyline(points, count, includeEndpoint = true) {
     const lengths = [];
     let total = 0;
     for (let i = 1; i < points.length; i += 1) {
@@ -267,7 +267,10 @@
       points[0].x === points[points.length - 1].x &&
       points[0].y === points[points.length - 1].y;
     for (let sample = 0; sample < count; sample += 1) {
-      const denominator = Math.max(1, closed ? count : count - 1);
+      const denominator = Math.max(
+        1,
+        closed || !includeEndpoint ? count : count - 1
+      );
       const target = (sample / denominator) * total;
       let walked = 0;
       let segment = 0;
@@ -425,7 +428,10 @@
       { x: FLAG_RIGHT_X, y: 116 },
       { x: FLAG_POLE_X, y: 116 }
     ];
-    samplePolyline(flagPath, FLAG_COUNT).forEach((point, pixel) => {
+    // The strip returns to the pole at the bottom-left of the square. Leave
+    // one LED spacing before that endpoint so its final pixel sits beside the
+    // pole pixel instead of painting directly over it.
+    samplePolyline(flagPath, FLAG_COUNT, false).forEach((point, pixel) => {
       coordinateMap.set(FLAG_START + pixel, point);
     });
     startMarkers.push({ pixel: FLAG_START, label: "0" });
@@ -788,12 +794,20 @@
     .then(response => response.json())
     .then(manifest => {
       patternCatalog = manifest.patterns;
-      manifest.patterns.forEach(pattern => {
-        [patternSelect, sequencePatternSelect].forEach(select => {
+      [patternSelect, sequencePatternSelect].forEach(select => {
+        const groups = new Map();
+        manifest.patterns.forEach(pattern => {
+          let group = groups.get(pattern.group);
+          if (!group) {
+            group = document.createElement("optgroup");
+            group.label = pattern.group;
+            groups.set(pattern.group, group);
+            select.appendChild(group);
+          }
           const option = document.createElement("option");
           option.value = pattern.id;
           option.textContent = pattern.label;
-          select.appendChild(option);
+          group.appendChild(option);
         });
       });
       const catalogById = new Map(patternCatalog.map(pattern => [pattern.id, pattern]));
