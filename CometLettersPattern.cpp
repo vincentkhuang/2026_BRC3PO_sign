@@ -5,7 +5,25 @@
 #include "SignLayout.h"
 
 namespace {
-void drawComet(uint8_t letter, int head, int tailLength, CRGB color) {
+void fillLetterRainbow(uint8_t letter, uint8_t value = 255) {
+  int start = letterStart(letter);
+  int length = letterLength(letter);
+  for (int pixel = 0; pixel < length; ++pixel) {
+    leds[start + pixel] = signRainbowColor(pixel, length, 0, 255, value);
+  }
+}
+
+void fillUnderlineRainbowSegment(uint8_t letter, uint8_t value) {
+  int start = underlineSegmentStart(letter);
+  int end = underlineSegmentEnd(letter);
+  int length = end - start;
+  for (int pixel = 0; pixel < length; ++pixel) {
+    Strip_U[start + pixel] =
+        signRainbowColor(pixel, length, 0, 255, value);
+  }
+}
+
+void drawComet(uint8_t letter, int head, int tailLength) {
   int start = letterStart(letter);
   int length = letterLength(letter);
 
@@ -13,7 +31,7 @@ void drawComet(uint8_t letter, int head, int tailLength, CRGB color) {
 
   for (int tail = 0; tail < tailLength; ++tail) {
     int position = (head - tail + length) % length;
-    CRGB tailColor = color;
+    CRGB tailColor = signRainbowColor(position, length);
     tailColor.nscale8_video(255 - ((tail * 220) / tailLength));
     leds[start + position] += tailColor;
   }
@@ -24,31 +42,25 @@ void drawComet(uint8_t letter, int head, int tailLength, CRGB color) {
 void runCometLettersPattern() {
   clearAllLetters();
   fill_solid(Strip_U, NUM_U, CRGB::Black);
-  fill_solid(Strip_F, NUM_F, CRGB::Black);
+  fillSignRainbow(Strip_F, NUM_F, 224);
 
   for (uint8_t letter = 0; letter < LETTER_COUNT; ++letter) {
-    CRGB color = signRainbowColor(letter, LETTER_COUNT);
     int length = letterLength(letter);
     int tailLength = length / 10;
     if (tailLength < 8) tailLength = 8;
 
     fill_solid(Strip_U, NUM_U, CRGB::Black);
-    CRGB underlineColor = color;
-    underlineColor.nscale8_video(110);
-    fillUnderlineSegment(letter, underlineColor);
-    fill_solid(Strip_F, NUM_F, color);
+    fillUnderlineRainbowSegment(letter, 110);
 
     for (int head = 0; head < length + tailLength; ++head) {
-      drawComet(letter, head % length, tailLength, color);
+      drawComet(letter, head % length, tailLength);
       LEDS.show();
       patternDelay(16);
     }
 
-    fillLetter(letter, color);
+    fillLetterRainbow(letter);
     LEDS.show();
     patternDelay(180);
     fillLetter(letter, CRGB::Black);
   }
-
-  fillSignRainbow(Strip_F, NUM_F, 224);
 }
