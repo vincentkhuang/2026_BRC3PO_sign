@@ -1,6 +1,6 @@
 #include "DiscoStrobePattern.h"
 
-#include "LedHardware.h"
+#include "../core/LedHardware.h"
 
 namespace {
 constexpr uint8_t STROBE_CYCLE_LENGTH = 4;

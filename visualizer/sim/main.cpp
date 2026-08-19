@@ -2,17 +2,18 @@
 #include <iostream>
 #include <string>
 
-#include "BlackoutRevealPattern.h"
-#include "CometLettersPattern.h"
-#include "FadeOutPattern.h"
-#include "LedHardware.h"
-#include "LetterDominoPattern.h"
-#include "NewPatternsShow.h"
-#include "PowerUpPattern.h"
-#include "ProtocolGoldPattern.h"
-#include "SignalRelayPattern.h"
-#include "Shows.h"
-#include "TypewriterPattern.h"
+#include "src/core/LedHardware.h"
+#include "src/patterns/BlackoutRevealPattern.h"
+#include "src/patterns/CometLettersPattern.h"
+#include "src/patterns/FadeOutPattern.h"
+#include "src/patterns/IdleScannerPattern.h"
+#include "src/patterns/LetterDominoPattern.h"
+#include "src/patterns/PowerUpPattern.h"
+#include "src/patterns/ProtocolGoldPattern.h"
+#include "src/patterns/SignalRelayPattern.h"
+#include "src/patterns/TypewriterPattern.h"
+#include "src/shows/NewPatternsShow.h"
+#include "src/shows/Shows.h"
 
 namespace {
 struct PatternEntry {
@@ -20,8 +21,20 @@ struct PatternEntry {
   void (*run)();
 };
 
+void runIdleScannerPreview() {
+  // Record one complete out-and-back sweep. The Teensy runs this renderer
+  // continuously between scheduled shows; a single sweep keeps the local
+  // preview useful without producing a seven-minute recording.
+  constexpr uint16_t IDLE_SCANNER_PREVIEW_STEPS = 2 * (NUM_U - 1) + 1;
+  initIdleScannerPattern();
+  for (uint16_t step = 0; step < IDLE_SCANNER_PREVIEW_STEPS; ++step) {
+    renderIdleScannerPattern();
+  }
+}
+
 const PatternEntry PATTERNS[] = {
     {"show", runNewPatternsShow},
+    {"idle-scanner", runIdleScannerPreview},
     {"power-up", runPowerUpPattern},
     {"typewriter", runTypewriterPattern},
     {"signal-relay", runSignalRelayPattern},

@@ -40,29 +40,31 @@ echo "Building the native pattern recorder…"
   -I"$ROOT_DIR" \
   "$SCRIPT_DIR/sim/FastLED.cpp" \
   "$SCRIPT_DIR/sim/main.cpp" \
-  "$ROOT_DIR/LedHardware.cpp" \
-  "$ROOT_DIR/SignTransitions.cpp" \
-  "$ROOT_DIR/SignLayout.cpp" \
-  "$ROOT_DIR/Controls.cpp" \
-  "$ROOT_DIR/LetterPatterns.cpp" \
-  "$ROOT_DIR/PalettePattern.cpp" \
-  "$ROOT_DIR/DancePattern.cpp" \
-  "$ROOT_DIR/ColorDropPattern.cpp" \
-  "$ROOT_DIR/DiscoStrobePattern.cpp" \
-  "$ROOT_DIR/Shows.cpp" \
-  "$ROOT_DIR/TypewriterPattern.cpp" \
-  "$ROOT_DIR/SignalRelayPattern.cpp" \
-  "$ROOT_DIR/ProtocolGoldPattern.cpp" \
-  "$ROOT_DIR/LetterDominoPattern.cpp" \
-  "$ROOT_DIR/PowerUpPattern.cpp" \
-  "$ROOT_DIR/BlackoutRevealPattern.cpp" \
-  "$ROOT_DIR/CometLettersPattern.cpp" \
-  "$ROOT_DIR/FadeOutPattern.cpp" \
-  "$ROOT_DIR/NewPatternsShow.cpp" \
+  "$ROOT_DIR/src/core/LedHardware.cpp" \
+  "$ROOT_DIR/src/core/SignTransitions.cpp" \
+  "$ROOT_DIR/src/core/SignLayout.cpp" \
+  "$ROOT_DIR/src/core/Controls.cpp" \
+  "$ROOT_DIR/src/patterns/IdleScannerPattern.cpp" \
+  "$ROOT_DIR/src/patterns/LetterPatterns.cpp" \
+  "$ROOT_DIR/src/patterns/PalettePattern.cpp" \
+  "$ROOT_DIR/src/patterns/DancePattern.cpp" \
+  "$ROOT_DIR/src/patterns/ColorDropPattern.cpp" \
+  "$ROOT_DIR/src/patterns/DiscoStrobePattern.cpp" \
+  "$ROOT_DIR/src/shows/Shows.cpp" \
+  "$ROOT_DIR/src/patterns/TypewriterPattern.cpp" \
+  "$ROOT_DIR/src/patterns/SignalRelayPattern.cpp" \
+  "$ROOT_DIR/src/patterns/ProtocolGoldPattern.cpp" \
+  "$ROOT_DIR/src/patterns/LetterDominoPattern.cpp" \
+  "$ROOT_DIR/src/patterns/PowerUpPattern.cpp" \
+  "$ROOT_DIR/src/patterns/BlackoutRevealPattern.cpp" \
+  "$ROOT_DIR/src/patterns/CometLettersPattern.cpp" \
+  "$ROOT_DIR/src/patterns/FadeOutPattern.cpp" \
+  "$ROOT_DIR/src/shows/NewPatternsShow.cpp" \
   -o "$BUILD_DIR/brc3po-sim"
 
 PATTERNS=(
   show
+  idle-scanner
   power-up
   typewriter
   signal-relay

@@ -796,6 +796,18 @@
           select.appendChild(option);
         });
       });
+      const catalogById = new Map(patternCatalog.map(pattern => [pattern.id, pattern]));
+      const defaultItems = manifest.defaultSequence?.items || [];
+      sequenceQueue = defaultItems.map(item => {
+        const pattern = catalogById.get(item.id);
+        return pattern ? {
+          id: pattern.id,
+          label: pattern.label,
+          repeats: Math.max(1, item.repeats || 1)
+        } : null;
+      }).filter(Boolean);
+      sequenceLoopInput.checked = Boolean(manifest.defaultSequence?.loop);
+      renderSequenceQueue();
       return loadPattern(manifest.patterns[0].id);
     })
     .catch(error => {

@@ -13,9 +13,9 @@ constexpr bool ENABLE_BRIGHTNESS_KNOB = true;
 constexpr uint8_t FIXED_LETTER_HUE = 0;
 constexpr uint8_t FIXED_BRIGHTNESS = 96;
 
-// Run the new-pattern preview immediately after power-up, before the two
-// legacy shows. Set false once installation testing is complete if desired.
-constexpr bool RUN_NEW_PATTERN_PREVIEW_AT_STARTUP = true;
+// Rest in Idle Scanner for this long after power-up and after every show.
+// The scheduler then advances Coordinated -> Legacy First -> Legacy Second.
+constexpr unsigned long IDLE_SCANNER_DURATION_MS = 7UL * 60UL * 1000UL;
 
 // Teensy status LED
 constexpr uint8_t POWER_PIN = 13;

@@ -2,7 +2,7 @@
 
 #include "PatternColors.h"
 #include "PatternTiming.h"
-#include "SignLayout.h"
+#include "../core/SignLayout.h"
 
 namespace {
 void fadeUnderline(uint8_t amount) {

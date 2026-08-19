@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LedHardware.h"
+#include "../core/LedHardware.h"
 
 inline CRGB signRainbowColor(int index, int count, uint8_t hueOffset = 0,
                              uint8_t saturation = 255,

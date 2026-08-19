@@ -1,8 +1,8 @@
 #include "DancePattern.h"
 
-#include "LedHardware.h"
+#include "../core/LedHardware.h"
 #include "LetterPatterns.h"
-#include "SignTransitions.h"
+#include "../core/SignTransitions.h"
 
 namespace {
 void danceDelay(unsigned long milliseconds, uint8_t timeScalePercent) {

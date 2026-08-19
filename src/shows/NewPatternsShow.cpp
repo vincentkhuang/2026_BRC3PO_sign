@@ -1,14 +1,14 @@
 #include "NewPatternsShow.h"
 
-#include "BlackoutRevealPattern.h"
-#include "CometLettersPattern.h"
-#include "FadeOutPattern.h"
-#include "LetterDominoPattern.h"
-#include "LedHardware.h"
-#include "PowerUpPattern.h"
-#include "ProtocolGoldPattern.h"
-#include "SignalRelayPattern.h"
-#include "TypewriterPattern.h"
+#include "../core/LedHardware.h"
+#include "../patterns/BlackoutRevealPattern.h"
+#include "../patterns/CometLettersPattern.h"
+#include "../patterns/FadeOutPattern.h"
+#include "../patterns/LetterDominoPattern.h"
+#include "../patterns/PowerUpPattern.h"
+#include "../patterns/ProtocolGoldPattern.h"
+#include "../patterns/SignalRelayPattern.h"
+#include "../patterns/TypewriterPattern.h"
 
 namespace {
 enum KineticPattern : uint8_t {

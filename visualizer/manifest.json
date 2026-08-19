@@ -1,6 +1,7 @@
 {
   "patterns": [
     { "id": "show", "label": "Coordinated Full Show" },
+    { "id": "idle-scanner", "label": "Idle Scanner" },
     { "id": "power-up", "label": "Power-Up" },
     { "id": "typewriter", "label": "Typewriter" },
     { "id": "signal-relay", "label": "Signal Relay" },
@@ -11,5 +12,16 @@
     { "id": "fade-out", "label": "Fade Out" },
     { "id": "legacy-first", "label": "Legacy First Show" },
     { "id": "legacy-second", "label": "Legacy Second Show" }
-  ]
+  ],
+  "defaultSequence": {
+    "loop": true,
+    "items": [
+      { "id": "idle-scanner", "repeats": 1 },
+      { "id": "show", "repeats": 1 },
+      { "id": "idle-scanner", "repeats": 1 },
+      { "id": "legacy-first", "repeats": 1 },
+      { "id": "idle-scanner", "repeats": 1 },
+      { "id": "legacy-second", "repeats": 1 }
+    ]
+  }
 }
