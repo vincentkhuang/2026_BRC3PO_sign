@@ -138,21 +138,46 @@ Use a properly sized external power supply for the LEDs. Do not power a large in
 
 The repository includes a code-accurate local visualizer that compiles the real C++ pattern modules against a simulated FastLED/Arduino layer. Every call to `LEDS.show()` is captured, then played over an approximate layout of the six letters, underline, and mailbox flag.
 
-Requirements:
+### Requirements
 
 - macOS or Linux
 - A C++17 compiler such as `clang++`
 - Python 3
 
-From the repository root, run:
+On a new macOS installation, running `xcode-select --install` installs the required command-line compiler. Linux users can use their distribution's normal C++ compiler and Python packages.
+
+### Quick start
+
+1. Open Terminal.
+2. Change into the cloned repository directory.
+3. Run the loader from the repository root:
 
 ```sh
+cd /path/to/2026_BRC3PO_sign
 ./visualizer/run_visualizer.sh
 ```
 
-The loader builds the simulator, records the complete show and every individual pattern, starts a local server at `http://127.0.0.1:8765`, and opens the player. Press `Ctrl-C` in the terminal to stop it.
+The loader then:
 
-Useful options:
+1. Builds the native C++ pattern recorder.
+2. Regenerates the complete show and every individual pattern from the current firmware source.
+3. Starts a local server at `http://127.0.0.1:8765`.
+4. Opens the visualizer in the default browser.
+
+Keep that Terminal window open while using the visualizer. Press `Ctrl-C` there to stop the local server.
+
+Do not open `visualizer/index.html` directly as a `file://` page. Browser security prevents a directly opened file from loading the generated pattern recordings; always use the `http://127.0.0.1:8765` address started by the loader.
+
+### Player controls
+
+- **Pattern** selects the structured full show or one individual pattern.
+- **Play / Pause** and **Restart** control playback.
+- **Timeline** scrubs to any recorded frame.
+- **Playback speed** changes only local preview speed; it does not edit firmware timing.
+- **Brightness** changes only the preview display level.
+- **Strip start markers** show logical pixel `0` and the estimated start of each letter's interior run.
+
+### Loader options
 
 ```sh
 # Build and serve without opening a browser
@@ -163,9 +188,19 @@ SEED=123 ./visualizer/run_visualizer.sh
 
 # Use another local port
 PORT=9000 ./visualizer/run_visualizer.sh
+
+# Select a specific C++ compiler
+CXX=g++ ./visualizer/run_visualizer.sh
 ```
 
-The player offers pattern selection, play/pause, timeline scrubbing, playback speed, brightness, and strip-start markers. Each letter is drawn as a block-letter exterior plus an interior run, and the mailbox flag includes its vertical pole and square top, based on the installed sign. Exact LED counts and buffer offsets come from the firmware; the visualizer distributes each letter's pixels between its two paths in proportion to their drawn lengths because the physical per-strip counts and start coordinates are not yet recorded. Colors, timing, fades, and pattern sequencing come from the firmware itself.
+Each letter is drawn as a block-letter exterior plus an interior run, and the mailbox flag includes its vertical pole and square top, based on the installed sign. Exact LED counts and buffer offsets come from the firmware; the visualizer distributes each letter's pixels between its two paths in proportion to their drawn lengths because the physical per-strip counts and start coordinates are not yet recorded. Colors, timing, fades, and pattern sequencing come from the firmware itself.
+
+### Troubleshooting
+
+- **Could not load frames:** confirm the address begins with `http://127.0.0.1`, not `file://`, and rerun the loader.
+- **Port already in use:** start it on another port, such as `PORT=9000 ./visualizer/run_visualizer.sh`.
+- **Compiler or Python missing:** install the requirement named in the Terminal error, then run the loader again.
+- **Firmware changed:** stop and rerun the loader so it recompiles the source and regenerates every recording.
 
 ## Project status
 
