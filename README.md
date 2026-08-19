@@ -57,7 +57,8 @@ The sketch uses a small hardware layer plus one module per visual pattern:
 | `PowerUpPattern.*` | Flicker, progress bar, sequential lock-on, and final flash |
 | `BlackoutRevealPattern.*` | Clockwise synchronized blackout and reveal |
 | `CometLettersPattern.*` | Runs a colored comet clockwise around each letter |
-| `NewPatternsShow.*` | Sequences the seven new patterns as a single show |
+| `FadeOutPattern.*` | Smoothly fades the entire installation to black between shows |
+| `NewPatternsShow.*` | Sequences the eight new patterns as a single show |
 | `LetterPatterns.*` | Shared letter fills, palette rotation, and shifting |
 | `Shows.*` | First/second show sequencing and the ten-minute scheduler |
 
@@ -100,13 +101,24 @@ During normal operation, the letters use the selected potentiometer color, the f
 
 At startup, the controller runs both programmed shows:
 
-1. **New Patterns Preview** — Power-Up, Typewriter, Protocol Gold, Signal Relay, Letter Domino, Comet Letters, and Blackout Reveal.
+1. **New Patterns Preview** — Power-Up, Typewriter, a shuffled kinetic section, Blackout Reveal, Protocol Gold, and Fade Out.
 2. **First Show** — rainbow flag and underline gradients with party-palette letters, followed by a back-and-forth letter dance.
 3. **Second Show** — white flashes, rotating rainbow letter colors, falling colors on the flag, and moving rainbow strobe dashes on the underline.
 
 After startup, all three shows rotate on a ten-minute timer. To skip the new-pattern preview at power-up while keeping it in the timed rotation, set `RUN_NEW_PATTERN_PREVIEW_AT_STARTUP` to `false` in `Config.h`.
 
 The letter strips are assumed to advance clockwise as their pixel indices increase. Blackout Reveal and Comet Letters begin at each strip's installed pixel `0`; no physical or software start-point alignment is required.
+
+The new-pattern show uses a structured random sequence:
+
+1. Power-Up
+2. Typewriter
+3. Signal Relay, Letter Domino, and Comet Letters in a shuffled order
+4. Blackout Reveal
+5. Protocol Gold
+6. Fade Out
+
+Every kinetic pattern plays exactly once per cycle. The shuffle also prevents the last kinetic pattern from one cycle from becoming the first kinetic pattern in the next cycle. Fade Out leaves the installation fully black so the next Power-Up has a clean starting point.
 
 ## Uploading
 
