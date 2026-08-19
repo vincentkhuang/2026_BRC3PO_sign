@@ -1,0 +1,13 @@
+{
+  "patterns": [
+    { "id": "show", "label": "Structured full show" },
+    { "id": "power-up", "label": "Power-Up" },
+    { "id": "typewriter", "label": "Typewriter" },
+    { "id": "signal-relay", "label": "Signal Relay" },
+    { "id": "letter-domino", "label": "Letter Domino" },
+    { "id": "comet-letters", "label": "Comet Letters" },
+    { "id": "blackout-reveal", "label": "Blackout Reveal" },
+    { "id": "protocol-gold", "label": "Protocol Gold" },
+    { "id": "fade-out", "label": "Fade Out" }
+  ]
+}

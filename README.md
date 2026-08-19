@@ -130,9 +130,42 @@ Every kinetic pattern plays exactly once per cycle. The shuffle also prevents th
 
 Use a properly sized external power supply for the LEDs. Do not power a large installation from the microcontroller's USB connection.
 
+## Local pattern visualizer
+
+The repository includes a code-accurate local visualizer that compiles the real C++ pattern modules against a simulated FastLED/Arduino layer. Every call to `LEDS.show()` is captured, then played over an approximate layout of the six letters, underline, and mailbox flag.
+
+Requirements:
+
+- macOS or Linux
+- A C++17 compiler such as `clang++`
+- Python 3
+
+From the repository root, run:
+
+```sh
+./visualizer/run_visualizer.sh
+```
+
+The loader builds the simulator, records the complete show and every individual pattern, starts a local server at `http://127.0.0.1:8765`, and opens the player. Press `Ctrl-C` in the terminal to stop it.
+
+Useful options:
+
+```sh
+# Build and serve without opening a browser
+./visualizer/run_visualizer.sh --no-open
+
+# Try a different structured-shuffle order
+SEED=123 ./visualizer/run_visualizer.sh
+
+# Use another local port
+PORT=9000 ./visualizer/run_visualizer.sh
+```
+
+The player offers pattern selection, play/pause, timeline scrubbing, playback speed, brightness, and pixel `0` markers. Geometry is intentionally approximate because the installed LED coordinates are not recorded; LED counts, buffer offsets, colors, timing, fades, and pattern sequencing come from the firmware itself.
+
 ## Project status
 
-This is legacy 2018 firmware being preserved for the 2026 installation. Before deploying it unattended, review the blocking animation timing, strip-shift boundaries, and `ColorDrop` palette indexing. Hardware testing is required because the repository does not currently include an automated simulator or test suite.
+This is legacy 2018 firmware being preserved for the 2026 installation. Before deploying it unattended, review the blocking animation timing, strip-shift boundaries, and `ColorDrop` palette indexing. The local visualizer checks pattern output without hardware, but final timing, color, current draw, and physical LED direction still require testing on the sign.
 
 ## License
 
