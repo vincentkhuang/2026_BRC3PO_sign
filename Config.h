@@ -13,6 +13,10 @@ constexpr bool ENABLE_BRIGHTNESS_KNOB = true;
 constexpr uint8_t FIXED_LETTER_HUE = 0;
 constexpr uint8_t FIXED_BRIGHTNESS = 96;
 
+// Run the new-pattern preview immediately after power-up, before the two
+// legacy shows. Set false once installation testing is complete if desired.
+constexpr bool RUN_NEW_PATTERN_PREVIEW_AT_STARTUP = true;
+
 // Teensy status LED
 constexpr uint8_t POWER_PIN = 13;
 
