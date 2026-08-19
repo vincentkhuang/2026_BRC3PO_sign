@@ -11,6 +11,7 @@
 #include "PowerUpPattern.h"
 #include "ProtocolGoldPattern.h"
 #include "SignalRelayPattern.h"
+#include "Shows.h"
 #include "TypewriterPattern.h"
 
 namespace {
@@ -29,6 +30,8 @@ const PatternEntry PATTERNS[] = {
     {"blackout-reveal", runBlackoutRevealPattern},
     {"protocol-gold", runProtocolGoldPattern},
     {"fade-out", runFadeOutPattern},
+    {"legacy-first", runLegacyFirstShow},
+    {"legacy-second", runLegacySecondShow},
 };
 
 void printUsage(const char* executable) {

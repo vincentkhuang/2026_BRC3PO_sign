@@ -10,8 +10,33 @@
 #include "Arduino.h"
 
 #define FASTLED_USING_NAMESPACE
-#define EVERY_N_SECONDS(period) if (true)
-#define EVERY_N_MINUTES(period) if (true)
+
+class SimEveryNMillis {
+ public:
+  explicit SimEveryNMillis(uint32_t periodMillis)
+      : periodMillis_(std::max<uint32_t>(1, periodMillis)),
+        previousMillis_(millis()) {}
+
+  bool ready() {
+    uint32_t now = millis();
+    uint32_t elapsed = now - previousMillis_;
+    if (elapsed < periodMillis_) return false;
+    previousMillis_ = now;
+    return true;
+  }
+
+ private:
+  uint32_t periodMillis_;
+  uint32_t previousMillis_;
+};
+
+#define SIM_TIMER_JOIN_INNER(left, right) left##right
+#define SIM_TIMER_JOIN(left, right) SIM_TIMER_JOIN_INNER(left, right)
+#define SIM_EVERY_N_MILLIS(period)                                      \
+  static SimEveryNMillis SIM_TIMER_JOIN(simTimer_, __LINE__)(period);   \
+  if (SIM_TIMER_JOIN(simTimer_, __LINE__).ready())
+#define EVERY_N_SECONDS(period) SIM_EVERY_N_MILLIS((period) * 1000UL)
+#define EVERY_N_MINUTES(period) SIM_EVERY_N_MILLIS((period) * 60000UL)
 
 struct CHSV {
   uint8_t hue;

@@ -42,6 +42,13 @@ echo "Building the native pattern recorder…"
   "$SCRIPT_DIR/sim/main.cpp" \
   "$ROOT_DIR/LedHardware.cpp" \
   "$ROOT_DIR/SignLayout.cpp" \
+  "$ROOT_DIR/Controls.cpp" \
+  "$ROOT_DIR/LetterPatterns.cpp" \
+  "$ROOT_DIR/PalettePattern.cpp" \
+  "$ROOT_DIR/DancePattern.cpp" \
+  "$ROOT_DIR/ColorDropPattern.cpp" \
+  "$ROOT_DIR/DiscoStrobePattern.cpp" \
+  "$ROOT_DIR/Shows.cpp" \
   "$ROOT_DIR/TypewriterPattern.cpp" \
   "$ROOT_DIR/SignalRelayPattern.cpp" \
   "$ROOT_DIR/ProtocolGoldPattern.cpp" \
@@ -63,6 +70,8 @@ PATTERNS=(
   blackout-reveal
   protocol-gold
   fade-out
+  legacy-first
+  legacy-second
 )
 
 echo "Recording real C++ pattern frames with seed ${SEED}…"

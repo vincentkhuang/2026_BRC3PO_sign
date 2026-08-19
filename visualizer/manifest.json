@@ -1,6 +1,6 @@
 {
   "patterns": [
-    { "id": "show", "label": "Structured full show" },
+    { "id": "show", "label": "Coordinated Full Show" },
     { "id": "power-up", "label": "Power-Up" },
     { "id": "typewriter", "label": "Typewriter" },
     { "id": "signal-relay", "label": "Signal Relay" },
@@ -8,6 +8,8 @@
     { "id": "comet-letters", "label": "Comet Letters" },
     { "id": "blackout-reveal", "label": "Blackout Reveal" },
     { "id": "protocol-gold", "label": "Protocol Gold" },
-    { "id": "fade-out", "label": "Fade Out" }
+    { "id": "fade-out", "label": "Fade Out" },
+    { "id": "legacy-first", "label": "Legacy First Show" },
+    { "id": "legacy-second", "label": "Legacy Second Show" }
   ]
 }

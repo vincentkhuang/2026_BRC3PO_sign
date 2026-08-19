@@ -136,7 +136,7 @@ Use a properly sized external power supply for the LEDs. Do not power a large in
 
 ## Local pattern visualizer
 
-The repository includes a code-accurate local visualizer that compiles the real C++ pattern modules against a simulated FastLED/Arduino layer. Every call to `LEDS.show()` is captured, then played over an approximate layout of the six letters, underline, and mailbox flag.
+The repository includes a code-accurate local visualizer that compiles the real C++ pattern and show modules against a simulated FastLED/Arduino layer. Every call to `LEDS.show()` is captured, then played over an approximate layout of the six letters, underline, and mailbox flag. The coordinated patterns and both legacy shows all use the same native recording path.
 
 ### Requirements
 
@@ -160,7 +160,7 @@ cd /path/to/2026_BRC3PO_sign
 The loader then:
 
 1. Builds the native C++ pattern recorder.
-2. Regenerates the complete show and every individual pattern from the current firmware source.
+2. Regenerates the coordinated show, every coordinated pattern, and both legacy shows from the current firmware source.
 3. Starts a local server at `http://127.0.0.1:8765`.
 4. Opens the visualizer in the default browser.
 
@@ -170,7 +170,10 @@ Do not open `visualizer/index.html` directly as a `file://` page. Browser securi
 
 ### Player controls
 
-- **Pattern** selects the structured full show or one individual pattern.
+- **Pattern** selects the coordinated full show, one coordinated pattern, Legacy First Show, or Legacy Second Show.
+- **Show sequence** builds an ordered queue from any available patterns or shows. Add the same item more than once, or set **Runs** above `1`, to repeat it consecutively.
+- **Play sequence** starts at the first queued item. Use the arrow and remove buttons to edit the order.
+- **Loop sequence endlessly** returns to the first queued item after the last run; leave it off to stop automatically at the end.
 - **Play / Pause** and **Restart** control playback.
 - **Timeline** scrubs to any recorded frame.
 - **Playback speed** changes only local preview speed; it does not edit firmware timing.
@@ -194,6 +197,8 @@ CXX=g++ ./visualizer/run_visualizer.sh
 ```
 
 Each letter is drawn as a block-letter exterior plus an interior run, and the mailbox flag includes its vertical pole and square top, based on the installed sign. Exact LED counts and buffer offsets come from the firmware; the visualizer distributes each letter's pixels between its two paths in proportion to their drawn lengths because the physical per-strip counts and start coordinates are not yet recorded. Colors, timing, fades, and pattern sequencing come from the firmware itself.
+
+Legacy First Show and Legacy Second Show are exposed through thin firmware wrappers and recorded by the same simulator executable as the coordinated patterns. Palette and Dance remain in Legacy First Show; Color Drop and Disco Strobe remain in Legacy Second Show, so the coordinated show does not duplicate them. The simulated FastLED interval timers preserve the legacy 1-second and 10-second color changes. The legacy shows retain their original timing; the coordinated-pattern `110%` timing scale does not alter them. Legacy Second Show produces a roughly 20 MB local recording because it renders at 100 frames per second for one minute. Generated recordings stay inside the ignored `visualizer/generated/` directory.
 
 ### Troubleshooting
 

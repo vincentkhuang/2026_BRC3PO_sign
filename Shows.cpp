@@ -86,6 +86,14 @@ void runSecondShow() {
 }
 }  // namespace
 
+void runLegacyFirstShow() {
+  runFirstShow();
+}
+
+void runLegacySecondShow() {
+  runSecondShow();
+}
+
 void updateShows() {
   static bool startupPending = true;
   static uint8_t nextShow = 0;
@@ -93,18 +101,18 @@ void updateShows() {
   if (startupPending) {
     fill_solid(leds, NUM_LEDS, CRGB::Black);
     if (RUN_NEW_PATTERN_PREVIEW_AT_STARTUP) runNewPatternsShow();
-    runFirstShow();
-    runSecondShow();
+    runLegacyFirstShow();
+    runLegacySecondShow();
     startupPending = false;
   }
 
   EVERY_N_MINUTES(10) {
     switch (nextShow) {
       case 0:
-        runFirstShow();
+        runLegacyFirstShow();
         break;
       case 1:
-        runSecondShow();
+        runLegacySecondShow();
         break;
       default:
         runNewPatternsShow();
