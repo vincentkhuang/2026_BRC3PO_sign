@@ -64,6 +64,8 @@ echo "Building the native pattern recorder…"
 
 PATTERNS=(
   show
+  legacy-first
+  legacy-second
   idle-scanner
   power-up
   typewriter
@@ -73,8 +75,10 @@ PATTERNS=(
   blackout-reveal
   protocol-gold
   fade-out
-  legacy-first
-  legacy-second
+  palette
+  dance
+  color-drop
+  disco-strobe
 )
 
 echo "Recording real C++ pattern frames with seed ${SEED}…"

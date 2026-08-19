@@ -794,12 +794,20 @@
     .then(response => response.json())
     .then(manifest => {
       patternCatalog = manifest.patterns;
-      manifest.patterns.forEach(pattern => {
-        [patternSelect, sequencePatternSelect].forEach(select => {
+      [patternSelect, sequencePatternSelect].forEach(select => {
+        const groups = new Map();
+        manifest.patterns.forEach(pattern => {
+          let group = groups.get(pattern.group);
+          if (!group) {
+            group = document.createElement("optgroup");
+            group.label = pattern.group;
+            groups.set(pattern.group, group);
+            select.appendChild(group);
+          }
           const option = document.createElement("option");
           option.value = pattern.id;
           option.textContent = pattern.label;
-          select.appendChild(option);
+          group.appendChild(option);
         });
       });
       const catalogById = new Map(patternCatalog.map(pattern => [pattern.id, pattern]));

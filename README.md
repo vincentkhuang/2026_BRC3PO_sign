@@ -19,7 +19,7 @@ The loader rebuilds all recordings, starts `http://127.0.0.1:8765`, and opens it
 
 ### Use it
 
-- **Pattern** plays Idle Scanner, the coordinated show, individual patterns, or either legacy show.
+- Both pattern selectors are grouped into complete Shows and Individual Patterns. The individual list includes the four legacy building blocks: Palette, Dance, Color Drop, and Disco Strobe.
 - **Show sequence** starts with the Teensy's exact six-part runtime order and loops endlessly by default.
 - Add, reorder, remove, or repeat queue entries to audition other combinations.
 - Playback speed and brightness affect only the preview, not the firmware.
