@@ -63,6 +63,28 @@ OctoWS2811 and FastLED intentionally share `LedHardware` because their setup is 
 
 Pin 13 is used as a power/debug indicator.
 
+### Disabling the control knobs
+
+The knobs can be disabled independently in `Config.h`. This is useful when a knob is disconnected, faulty, or the installation should always start with a fixed appearance.
+
+```cpp
+constexpr bool ENABLE_COLOR_KNOB = true;
+constexpr bool ENABLE_BRIGHTNESS_KNOB = true;
+```
+
+Change a knob's setting from `true` to `false` to stop reading its analog input. Then set the value that should be used instead:
+
+```cpp
+constexpr uint8_t FIXED_LETTER_HUE = 0;
+constexpr uint8_t FIXED_BRIGHTNESS = 96;
+```
+
+- `FIXED_LETTER_HUE` accepts FastLED hue values from `0` to `255`. For example, `0` is red, approximately `85` is green, and approximately `170` is blue.
+- `FIXED_BRIGHTNESS` accepts values from `0` to `240`, matching this project's configured brightness limit.
+- To disable both knobs, set both `ENABLE_*_KNOB` values to `false`.
+
+Turning a switch off in software means its physical analog input is ignored. Power down the installation before physically disconnecting or rewiring a knob.
+
 ## Show sequence
 
 During normal operation, the letters use the selected potentiometer color, the flag is red, and a white scanner moves along the underline.

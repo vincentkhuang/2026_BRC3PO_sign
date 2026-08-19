@@ -6,6 +6,13 @@
 constexpr uint8_t POT_COLOR = 3;
 constexpr uint8_t POT_BRIGHTNESS = 5;
 
+// Set either switch to false to ignore that physical knob. The matching
+// fixed value below is used whenever a knob is disabled.
+constexpr bool ENABLE_COLOR_KNOB = true;
+constexpr bool ENABLE_BRIGHTNESS_KNOB = true;
+constexpr uint8_t FIXED_LETTER_HUE = 0;
+constexpr uint8_t FIXED_BRIGHTNESS = 96;
+
 // Teensy status LED
 constexpr uint8_t POWER_PIN = 13;
 
@@ -37,4 +44,3 @@ constexpr int P_START = 7 * NUM_LEDS_PER_STRIP;
 constexpr uint8_t INITIAL_BRIGHTNESS = 96;
 constexpr uint8_t MAX_BRIGHTNESS = 240;
 constexpr uint16_t IDLE_FRAME_LENGTH_MS = 100;
-
