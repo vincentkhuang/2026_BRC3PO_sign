@@ -43,6 +43,7 @@ The sketch uses a small hardware layer plus one module per visual pattern:
 | `Config.h` | Pin assignments, strip sizes, channel offsets, and timing constants |
 | `TeensyController.*` | Serial startup and the Teensy status LED |
 | `LedHardware.*` | OctoWS2811/FastLED initialization, LED buffer, and named strip views |
+| `SignTransitions.*` | Shared whole-sign fades and cross-pattern blending |
 | `Controls.*` | Potentiometer sampling and the selected color/brightness state |
 | `IdleScannerPattern.*` | Normal sign display and bouncing underline scanner |
 | `PalettePattern.*` | Rainbow flag/underline and party-palette rendering |
@@ -54,9 +55,9 @@ The sketch uses a small hardware layer plus one module per visual pattern:
 | `SignalRelayPattern.*` | Sends a charge from the flag through the underline and letters |
 | `ProtocolGoldPattern.*` | Gold letter shimmer, sparkles, and breathing accents |
 | `LetterDominoPattern.*` | Activates and clears letters forward and backward |
-| `PowerUpPattern.*` | Flicker, progress bar, sequential lock-on, and final flash |
+| `PowerUpPattern.*` | Flicker, progress bar, sequential lock-on, and final full-sign state |
 | `BlackoutRevealPattern.*` | Clockwise synchronized blackout and reveal |
-| `CometLettersPattern.*` | Runs a colored comet clockwise around each letter |
+| `CometLettersPattern.*` | Runs two clockwise comets per letter; the second leaves its rainbow trail illuminated |
 | `FadeOutPattern.*` | Smoothly fades the entire installation to black between shows |
 | `NewPatternsShow.*` | Sequences the eight new patterns as a single show |
 | `LetterPatterns.*` | Shared letter fills, palette rotation, and shifting |
@@ -107,7 +108,7 @@ At startup, the controller runs both programmed shows:
 
 After startup, all three shows rotate on a ten-minute timer. To skip the new-pattern preview at power-up while keeping it in the timed rotation, set `RUN_NEW_PATTERN_PREVIEW_AT_STARTUP` to `false` in `Config.h`.
 
-The letter strips are assumed to advance clockwise as their pixel indices increase. Blackout Reveal and Comet Letters begin at each strip's installed pixel `0`; no physical or software start-point alignment is required.
+Every letter's pixel `0` is installed at the bottom-left of its exterior run, and pixel indices advance clockwise from there. Blackout Reveal and Comet Letters use that physical order directly; no software start-point alignment is required. Coordinated partial-to-full underline fills travel from the sign's right edge toward its left edge except for Power-Up, whose progress bar deliberately fills left to right, and Letter Domino, whose underline segments are coupled directly to their reading-order letters.
 
 The new-pattern show uses a structured random sequence:
 
@@ -118,7 +119,11 @@ The new-pattern show uses a structured random sequence:
 5. Protocol Gold
 6. Fade Out
 
-Every kinetic pattern plays exactly once per cycle. The shuffle also prevents the last kinetic pattern from one cycle from becoming the first kinetic pattern in the next cycle. Fade Out leaves the installation fully black so the next Power-Up has a clean starting point.
+Every kinetic pattern plays exactly once per cycle. The shuffle also prevents the last kinetic pattern from one cycle from becoming the first kinetic pattern in the next cycle. Shared transitions fade any abrupt whole-sign change from illuminated to dark or dark to illuminated; progressive traces, sweeps, and fills remain unchanged, and intentional flashes and strobes stay crisp. Fade Out leaves the installation fully black so the next Power-Up has a clean starting point.
+
+The coordinated patterns deliberately vary their color treatment: Power-Up and Blackout Reveal use full-sign rainbows; Typewriter uses one consistent hue for an entire word and advances to a different hue on its next run; Signal Relay and Letter Domino rotate colors as they travel; every Comet Letter traces the same cohesive rainbow progression twice around its clockwise path, with a dark reset before the second pass accumulates into the completed letter. Comet Letters keeps its full underline and flag on one solid matching accent color, then advances that color on its next run. Protocol Gold fades smoothly from the previous pattern into its bright gold underline and white sparkles over a full-brightness background color that changes between runs. Fade Out preserves whichever colors are already showing as it takes the sign to black.
+
+All coordinated-pattern delays pass through `PatternTiming.h`, where `PATTERN_TIME_SCALE_PERCENT` is set to `120`. This makes the complete show 20% slower than the original timing while carrying fractional milliseconds between short animation frames so their rounding does not change the overall speed.
 
 ## Uploading
 
@@ -130,9 +135,82 @@ Every kinetic pattern plays exactly once per cycle. The shuffle also prevents th
 
 Use a properly sized external power supply for the LEDs. Do not power a large installation from the microcontroller's USB connection.
 
+## Local pattern visualizer
+
+The repository includes a code-accurate local visualizer that compiles the real C++ pattern and show modules against a simulated FastLED/Arduino layer. Every call to `LEDS.show()` is captured, then played over an approximate layout of the six letters, underline, and mailbox flag. The coordinated patterns and both legacy shows all use the same native recording path.
+
+### Requirements
+
+- macOS or Linux
+- A C++17 compiler such as `clang++`
+- Python 3
+
+On a new macOS installation, running `xcode-select --install` installs the required command-line compiler. Linux users can use their distribution's normal C++ compiler and Python packages.
+
+### Quick start
+
+1. Open Terminal.
+2. Change into the cloned repository directory.
+3. Run the loader from the repository root:
+
+```sh
+cd /path/to/2026_BRC3PO_sign
+./visualizer/run_visualizer.sh
+```
+
+The loader then:
+
+1. Builds the native C++ pattern recorder.
+2. Regenerates the coordinated show, every coordinated pattern, and both legacy shows from the current firmware source.
+3. Starts a local server at `http://127.0.0.1:8765`.
+4. Opens the visualizer in the default browser.
+
+Keep that Terminal window open while using the visualizer. Press `Ctrl-C` there to stop the local server.
+
+Do not open `visualizer/index.html` directly as a `file://` page. Browser security prevents a directly opened file from loading the generated pattern recordings; always use the `http://127.0.0.1:8765` address started by the loader.
+
+### Player controls
+
+- **Pattern** selects the coordinated full show, one coordinated pattern, Legacy First Show, or Legacy Second Show.
+- **Show sequence** builds an ordered queue from any available patterns or shows. Add the same item more than once, or set **Runs** above `1`, to repeat it consecutively.
+- **Play sequence** starts at the first queued item. Use the arrow and remove buttons to edit the order.
+- **Loop sequence endlessly** returns to the first queued item after the last run; leave it off to stop automatically at the end.
+- **Play / Pause** and **Restart** control playback.
+- **Timeline** scrubs to any recorded frame.
+- **Playback speed** changes only local preview speed; it does not edit firmware timing.
+- **Brightness** changes only the preview display level.
+- **Strip start markers** show logical pixel `0` and the estimated start of each letter's interior run.
+
+### Loader options
+
+```sh
+# Build and serve without opening a browser
+./visualizer/run_visualizer.sh --no-open
+
+# Try a different structured-shuffle order
+SEED=123 ./visualizer/run_visualizer.sh
+
+# Use another local port
+PORT=9000 ./visualizer/run_visualizer.sh
+
+# Select a specific C++ compiler
+CXX=g++ ./visualizer/run_visualizer.sh
+```
+
+Each letter is drawn as a block-letter exterior plus an interior run, with pixel `0` shown at the known bottom-left exterior start, and the mailbox flag includes its vertical pole and square top. Exact LED counts and buffer offsets come from the firmware; the visualizer distributes each letter's remaining pixels between its two paths in proportion to their drawn lengths because the exact exterior/interior split counts are not yet recorded. Colors, timing, fades, and pattern sequencing come from the firmware itself.
+
+Legacy First Show and Legacy Second Show are exposed through thin firmware wrappers and recorded by the same simulator executable as the coordinated patterns. Each legacy entry crossfades through 24 frames into its first intended look, preserving the configured hardware brightness while avoiding a hard cut. Palette and Dance remain in Legacy First Show; Color Drop and Disco Strobe remain in Legacy Second Show, so the coordinated show does not duplicate them. Color Drop sends each falling light through the complete flag path from LED `142` through LED `0`, so the pole and square participate in the same animation. Legacy First uses a `49%` time scale after two successive 30% speed increases; Legacy Second uses a `70%` time scale. Each show's total window and animation delays are scaled together, while Legacy Second also scales its frame interval and color-change timers, so the complete content plays faster instead of ending early. The coordinated-pattern timing scale does not alter them. Legacy Second Show produces a large local recording because it retains roughly 6,000 animation frames. Generated recordings stay inside the ignored `visualizer/generated/` directory.
+
+### Troubleshooting
+
+- **Could not load frames:** confirm the address begins with `http://127.0.0.1`, not `file://`, and rerun the loader.
+- **Port already in use:** start it on another port, such as `PORT=9000 ./visualizer/run_visualizer.sh`.
+- **Compiler or Python missing:** install the requirement named in the Terminal error, then run the loader again.
+- **Firmware changed:** stop and rerun the loader so it recompiles the source and regenerates every recording.
+
 ## Project status
 
-This is legacy 2018 firmware being preserved for the 2026 installation. Before deploying it unattended, review the blocking animation timing, strip-shift boundaries, and `ColorDrop` palette indexing. Hardware testing is required because the repository does not currently include an automated simulator or test suite.
+This is legacy 2018 firmware being preserved for the 2026 installation. Before deploying it unattended, review the blocking animation timing, strip-shift boundaries, and `ColorDrop` palette indexing. The local visualizer checks pattern output without hardware, but final timing, color, current draw, and physical LED direction still require testing on the sign.
 
 ## License
 

@@ -8,41 +8,60 @@
 #include "LetterPatterns.h"
 #include "NewPatternsShow.h"
 #include "PalettePattern.h"
+#include "SignTransitions.h"
 
 namespace {
-constexpr unsigned long FIRST_SHOW_DURATION_MS = 120UL * 1000UL;
-constexpr unsigned long SECOND_SHOW_DURATION_MS = 60UL * 1000UL;
-constexpr uint8_t SECOND_SHOW_FPS = 100;
+constexpr uint8_t FIRST_SHOW_TIME_SCALE_PERCENT = 49;
+constexpr uint8_t SECOND_SHOW_TIME_SCALE_PERCENT = 70;
+constexpr unsigned long FIRST_SHOW_DURATION_MS =
+    120UL * 1000UL * FIRST_SHOW_TIME_SCALE_PERCENT / 100UL;
+constexpr unsigned long SECOND_SHOW_DURATION_MS =
+    60UL * 1000UL * SECOND_SHOW_TIME_SCALE_PERCENT / 100UL;
+constexpr uint16_t SECOND_SHOW_FRAME_MS =
+    (1000UL / 100UL) * SECOND_SHOW_TIME_SCALE_PERCENT / 100UL;
+constexpr unsigned long DROP_COLOR_INTERVAL_MS =
+    10UL * 1000UL * SECOND_SHOW_TIME_SCALE_PERCENT / 100UL;
+constexpr unsigned long LETTER_COLOR_INTERVAL_MS =
+    1000UL * SECOND_SHOW_TIME_SCALE_PERCENT / 100UL;
+constexpr uint8_t LEGACY_FADE_FRAME_COUNT = 24;
 
-void delayToSyncFrameRate(uint8_t framesPerSecond) {
+void legacyDelay(unsigned long milliseconds, uint8_t timeScalePercent) {
+  LEDS.delay(milliseconds * timeScalePercent / 100UL);
+}
+
+void delayToSyncFrameRate(uint16_t targetFrameMillis) {
   static uint32_t previousMillis = 0;
   uint32_t currentMillis = millis();
   uint16_t elapsed = currentMillis - previousMillis;
-  uint16_t target = 1000 / framesPerSecond;
-  if (elapsed < target) delay(target - elapsed);
+  if (elapsed < targetFrameMillis) delay(targetFrameMillis - elapsed);
   previousMillis = millis();
 }
 
-void flashLetters(int count) {
+void flashLetters(int count, uint8_t timeScalePercent) {
   for (int i = 0; i < count; ++i) {
     setLetterColor(CRGB::White);
     LEDS.show();
-    LEDS.delay(200);
+    legacyDelay(200, timeScalePercent);
     setLetterColor(CRGB::Black);
     LEDS.show();
-    LEDS.delay(400);
+    legacyDelay(400, timeScalePercent);
   }
 }
 
 void runFirstShow() {
   currentBlending = LINEARBLEND;
-  unsigned long startTime = millis();
   static uint8_t paletteIndex = 0;
+
+  captureSignTransitionSource();
+  renderPalettePattern(paletteIndex++);
+  fadeIntoCurrentSignFrame(LEGACY_FADE_FRAME_COUNT, 25,
+                           FIRST_SHOW_TIME_SCALE_PERCENT);
+  unsigned long startTime = millis();
 
   while (millis() - startTime < FIRST_SHOW_DURATION_MS) {
     renderPalettePattern(paletteIndex++);
     LEDS.show();
-    LEDS.delay(200);
+    legacyDelay(200, FIRST_SHOW_TIME_SCALE_PERCENT);
   }
 
   readControls();
@@ -50,41 +69,56 @@ void runFirstShow() {
   fill_solid(Strip_F, NUM_F, CRGB::Red);
   fill_solid(Strip_U, NUM_U, CRGB::White);
   LEDS.show();
-  LEDS.delay(200);
+  legacyDelay(200, FIRST_SHOW_TIME_SCALE_PERCENT);
 
-  runDancePattern(10);
+  runDancePattern(10, FIRST_SHOW_TIME_SCALE_PERCENT);
   fill_solid(Strip_U, NUM_U, CRGB::Black);
 }
 
 void runSecondShow() {
-  setLetterColor(CRGB::Black);
+  captureSignTransitionSource();
+  setLetterColor(CRGB::White);
   fill_solid(Strip_F, NUM_F, CRGB::Black);
   fill_solid(Strip_U, NUM_U, CRGB::Black);
-  LEDS.show();
-  LEDS.delay(500);
-  flashLetters(3);
+  fadeIntoCurrentSignFrame(LEGACY_FADE_FRAME_COUNT, 25,
+                           SECOND_SHOW_TIME_SCALE_PERCENT);
+  legacyDelay(200, SECOND_SHOW_TIME_SCALE_PERCENT);
+  captureSignTransitionSource();
+  setLetterColor(CRGB::Black);
+  fadeIntoCurrentSignFrame(LEGACY_FADE_FRAME_COUNT, 25,
+                           SECOND_SHOW_TIME_SCALE_PERCENT);
+  legacyDelay(400, SECOND_SHOW_TIME_SCALE_PERCENT);
+  flashLetters(2, SECOND_SHOW_TIME_SCALE_PERCENT);
 
   int letterPaletteIndex = 0;
   static int dropColorIndex = 0;
   unsigned long startTime = millis();
 
   while (millis() - startTime < SECOND_SHOW_DURATION_MS) {
-    EVERY_N_SECONDS(10) { dropColorIndex += 3; }
+    EVERY_N_MILLISECONDS(DROP_COLOR_INTERVAL_MS) { dropColorIndex += 3; }
     if (dropColorIndex > 12) dropColorIndex = 0;
 
     renderColorDropPattern(dropColorIndex);
     letterColorShift(letterPaletteIndex);
     renderDiscoStrobePattern();
     LEDS.show();
-    delayToSyncFrameRate(SECOND_SHOW_FPS);
+    delayToSyncFrameRate(SECOND_SHOW_FRAME_MS);
 
-    EVERY_N_SECONDS(1) { ++letterPaletteIndex; }
+    EVERY_N_MILLISECONDS(LETTER_COLOR_INTERVAL_MS) { ++letterPaletteIndex; }
     if (letterPaletteIndex > 15) letterPaletteIndex = 0;
   }
 
-  flashLetters(5);
+  flashLetters(5, SECOND_SHOW_TIME_SCALE_PERCENT);
 }
 }  // namespace
+
+void runLegacyFirstShow() {
+  runFirstShow();
+}
+
+void runLegacySecondShow() {
+  runSecondShow();
+}
 
 void updateShows() {
   static bool startupPending = true;
@@ -93,18 +127,18 @@ void updateShows() {
   if (startupPending) {
     fill_solid(leds, NUM_LEDS, CRGB::Black);
     if (RUN_NEW_PATTERN_PREVIEW_AT_STARTUP) runNewPatternsShow();
-    runFirstShow();
-    runSecondShow();
+    runLegacyFirstShow();
+    runLegacySecondShow();
     startupPending = false;
   }
 
   EVERY_N_MINUTES(10) {
     switch (nextShow) {
       case 0:
-        runFirstShow();
+        runLegacyFirstShow();
         break;
       case 1:
-        runSecondShow();
+        runLegacySecondShow();
         break;
       default:
         runNewPatternsShow();

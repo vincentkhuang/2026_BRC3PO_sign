@@ -1,56 +1,86 @@
 #include "CometLettersPattern.h"
 
+#include "PatternColors.h"
+#include "PatternTiming.h"
 #include "SignLayout.h"
 
 namespace {
-const CRGB LETTER_COLORS[LETTER_COUNT] = {
-    CRGB::Red, CRGB::Orange, CRGB::Yellow,
-    CRGB::Green, CRGB::Blue, CRGB::Purple};
+uint8_t nextAccentHue = 0;
+constexpr uint8_t ACCENT_HUE_STEP = 43;
 
-void drawComet(uint8_t letter, int head, int tailLength, CRGB color) {
+void fillLetterRainbow(uint8_t letter, uint8_t value = 255) {
+  int start = letterStart(letter);
+  int length = letterLength(letter);
+  for (int pixel = 0; pixel < length; ++pixel) {
+    leds[start + pixel] = signRainbowColor(pixel, length, 0, 255, value);
+  }
+}
+
+void drawComet(uint8_t letter, int head, int tailLength) {
   int start = letterStart(letter);
   int length = letterLength(letter);
 
   for (int i = 0; i < length; ++i) leds[start + i].fadeToBlackBy(70);
 
   for (int tail = 0; tail < tailLength; ++tail) {
-    int position = (head - tail + length) % length;
-    CRGB tailColor = color;
+    int position = head - tail;
+    if (position < 0 || position >= length) continue;
+    CRGB tailColor = signRainbowColor(position, length);
     tailColor.nscale8_video(255 - ((tail * 220) / tailLength));
     leds[start + position] += tailColor;
   }
-  leds[start + (head % length)] = CRGB::White;
+  if (head < length) leds[start + head] = CRGB::White;
+}
+
+void drawAccumulatingComet(uint8_t letter, int head) {
+  int start = letterStart(letter);
+  int length = letterLength(letter);
+
+  if (head > 0) {
+    int finishedPixel = head - 1;
+    leds[start + finishedPixel] =
+        signRainbowColor(finishedPixel, length);
+  }
+  leds[start + head] = CRGB::White;
 }
 }  // namespace
 
 void runCometLettersPattern() {
+  CRGB accentColor = CHSV(nextAccentHue, 235, 255);
+  nextAccentHue += ACCENT_HUE_STEP;
+
+  captureSignTransitionSource();
   clearAllLetters();
-  fill_solid(Strip_U, NUM_U, CRGB::Black);
-  fill_solid(Strip_F, NUM_F, CRGB::Black);
+  fill_solid(Strip_U, NUM_U, accentColor);
+  fill_solid(Strip_F, NUM_F, accentColor);
+  fadeIntoCurrentPatternFrame();
 
   for (uint8_t letter = 0; letter < LETTER_COUNT; ++letter) {
-    CRGB color = LETTER_COLORS[letter];
     int length = letterLength(letter);
     int tailLength = length / 10;
     if (tailLength < 8) tailLength = 8;
 
-    fill_solid(Strip_U, NUM_U, CRGB::Black);
-    CRGB underlineColor = color;
-    underlineColor.nscale8_video(110);
-    fillUnderlineSegment(letter, underlineColor);
-    fill_solid(Strip_F, NUM_F, color);
-
     for (int head = 0; head < length + tailLength; ++head) {
-      drawComet(letter, head % length, tailLength, color);
+      drawComet(letter, head, tailLength);
       LEDS.show();
-      LEDS.delay(16);
+      patternDelay(16);
     }
 
-    fillLetter(letter, color);
-    LEDS.show();
-    LEDS.delay(180);
+    // Give the accumulating pass a completely clean, dark letter to paint.
     fillLetter(letter, CRGB::Black);
-  }
+    LEDS.show();
+    patternDelay(100);
 
-  fill_solid(Strip_F, NUM_F, CRGB::Red);
+    // The second comet paints a permanent rainbow behind its white head,
+    // turning the moving trail into the fully illuminated letter gradually.
+    for (int head = 0; head < length; ++head) {
+      drawAccumulatingComet(letter, head);
+      LEDS.show();
+      patternDelay(16);
+    }
+
+    fillLetterRainbow(letter);
+    LEDS.show();
+    patternDelay(180);
+  }
 }

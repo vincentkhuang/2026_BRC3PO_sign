@@ -1,5 +1,7 @@
 #include "SignalRelayPattern.h"
 
+#include "PatternColors.h"
+#include "PatternTiming.h"
 #include "SignLayout.h"
 
 namespace {
@@ -9,16 +11,15 @@ void fadeUnderline(uint8_t amount) {
 }  // namespace
 
 void runSignalRelayPattern() {
-  clearAllLetters();
-  fill_solid(Strip_U, NUM_U, CRGB::Black);
-  fill_solid(Strip_F, NUM_F, CRGB::Black);
+  fadePatternToBlack();
 
   // The mailbox flag charges from its installed pixel zero toward its end.
   for (int position = 0; position < NUM_F; position += 2) {
-    Strip_F[position] = CRGB::Red;
-    if (position + 1 < NUM_F) Strip_F[position + 1] = CRGB::Red;
+    CRGB signalColor = signRainbowColor(position, NUM_F, 224);
+    Strip_F[position] = signalColor;
+    if (position + 1 < NUM_F) Strip_F[position + 1] = signalColor;
     LEDS.show();
-    LEDS.delay(8);
+    patternDelay(8);
   }
 
   uint8_t nextLetter = 0;
@@ -29,15 +30,21 @@ void runSignalRelayPattern() {
 
     while (nextLetter < LETTER_COUNT &&
            position >= underlineSegmentStart(nextLetter)) {
-      fillLetter(nextLetter, CRGB::Gold);
+      fillLetter(nextLetter,
+                 signRainbowColor(nextLetter, LETTER_COUNT, 24));
       ++nextLetter;
     }
 
     LEDS.show();
-    LEDS.delay(12);
+    patternDelay(12);
   }
 
-  fill_solid(Strip_U, NUM_U, CRGB::Gold);
-  LEDS.show();
-  LEDS.delay(1200);
+  fill_solid(Strip_U, NUM_U, CRGB::Black);
+  for (int position = NUM_U - 1; position >= 0; --position) {
+    Strip_U[position] = signRainbowColor(position, NUM_U, 24);
+    LEDS.show();
+    patternDelay(8);
+  }
+
+  patternDelay(1200);
 }
