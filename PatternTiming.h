@@ -2,10 +2,10 @@
 
 #include "LedHardware.h"
 
-// Run every coordinated-pattern hold and animation frame 10% slower than the
+// Run every coordinated-pattern hold and animation frame 20% slower than the
 // original preview values. Keeping the scale here makes the whole show easy to
 // retune without introducing slightly different hand-rounded delays.
-constexpr unsigned long PATTERN_TIME_SCALE_PERCENT = 110;
+constexpr unsigned long PATTERN_TIME_SCALE_PERCENT = 120;
 
 inline void patternDelay(unsigned long milliseconds) {
   // Carry fractional milliseconds forward so repeated short frame delays stay

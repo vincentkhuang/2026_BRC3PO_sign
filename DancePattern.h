@@ -1,4 +1,5 @@
 #pragma once
 
-void runDancePattern(int cycles);
+#include <Arduino.h>
 
+void runDancePattern(int cycles, uint8_t timeScalePercent = 100);

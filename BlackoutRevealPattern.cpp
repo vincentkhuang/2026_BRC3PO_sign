@@ -52,8 +52,9 @@ void runBlackoutRevealPattern() {
     setSynchronizedLetterPixel(progress, true);
     int underlinePosition = (progress * NUM_U) / LONGEST_LETTER;
     if (underlinePosition < NUM_U) {
-      Strip_U[underlinePosition] =
-          signRainbowColor(underlinePosition, NUM_U);
+      int reversePosition = NUM_U - 1 - underlinePosition;
+      Strip_U[reversePosition] =
+          signRainbowColor(reversePosition, NUM_U);
     }
     int flagPosition = (progress * NUM_F) / LONGEST_LETTER;
     if (flagPosition < NUM_F) {

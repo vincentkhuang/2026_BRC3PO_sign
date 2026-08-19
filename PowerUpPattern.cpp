@@ -21,7 +21,9 @@ void runPowerUpPattern() {
   for (int progress = 0; progress < NUM_U; ++progress) {
     uint8_t intensity = map(progress, 0, NUM_U - 1, 35, 190);
     renderLetterFlicker(intensity);
-    Strip_U[progress] = signRainbowColor(progress, NUM_U);
+    int underlinePosition = NUM_U - 1 - progress;
+    Strip_U[underlinePosition] =
+        signRainbowColor(underlinePosition, NUM_U);
 
     CRGB flagColor = ((progress / 10) % 2 == 0)
                          ? signRainbowColor(progress, NUM_U, 224)
@@ -40,10 +42,8 @@ void runPowerUpPattern() {
     patternDelay(180);
   }
 
-  fill_solid(leds, NUM_LEDS, CRGB::White);
-  LEDS.show();
-  patternDelay(120);
-
+  // Preserve the locked letter colors as the remaining sign elements settle
+  // into their final state; avoid a full-sign white flash between them.
   for (uint8_t letter = 0; letter < LETTER_COUNT; ++letter) {
     fillLetter(letter, signRainbowColor(letter, LETTER_COUNT));
   }

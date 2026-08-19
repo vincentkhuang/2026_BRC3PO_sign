@@ -14,7 +14,8 @@ void runTypewriterPattern() {
 
   clearAllLetters();
   fill_solid(Strip_U, NUM_U, CRGB::Black);
-  fill_solid(Strip_F, NUM_F, CRGB::Black);
+  // Keep the mailbox flag visible for the entire typing sequence.
+  fill_solid(Strip_F, NUM_F, runColor);
 
   for (uint8_t letter = 0; letter < LETTER_COUNT; ++letter) {
     fill_solid(Strip_U, NUM_U, CRGB::Black);
@@ -28,7 +29,13 @@ void runTypewriterPattern() {
     patternDelay(260);
   }
 
-  fill_solid(Strip_U, NUM_U, runColor);
+  fill_solid(Strip_U, NUM_U, CRGB::Black);
+  for (int position = NUM_U - 1; position >= 0; --position) {
+    Strip_U[position] = runColor;
+    LEDS.show();
+    patternDelay(8);
+  }
+
   fill_solid(Strip_F, NUM_F, runColor);
   LEDS.show();
   patternDelay(1400);

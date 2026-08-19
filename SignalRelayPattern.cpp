@@ -41,7 +41,12 @@ void runSignalRelayPattern() {
     patternDelay(12);
   }
 
-  fillSignRainbow(Strip_U, NUM_U, 24);
-  LEDS.show();
+  fill_solid(Strip_U, NUM_U, CRGB::Black);
+  for (int position = NUM_U - 1; position >= 0; --position) {
+    Strip_U[position] = signRainbowColor(position, NUM_U, 24);
+    LEDS.show();
+    patternDelay(8);
+  }
+
   patternDelay(1200);
 }

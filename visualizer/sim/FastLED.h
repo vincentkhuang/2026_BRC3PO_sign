@@ -35,6 +35,7 @@ class SimEveryNMillis {
 #define SIM_EVERY_N_MILLIS(period)                                      \
   static SimEveryNMillis SIM_TIMER_JOIN(simTimer_, __LINE__)(period);   \
   if (SIM_TIMER_JOIN(simTimer_, __LINE__).ready())
+#define EVERY_N_MILLISECONDS(period) SIM_EVERY_N_MILLIS(period)
 #define EVERY_N_SECONDS(period) SIM_EVERY_N_MILLIS((period) * 1000UL)
 #define EVERY_N_MINUTES(period) SIM_EVERY_N_MILLIS((period) * 60000UL)
 

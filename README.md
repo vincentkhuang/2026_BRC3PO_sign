@@ -54,9 +54,9 @@ The sketch uses a small hardware layer plus one module per visual pattern:
 | `SignalRelayPattern.*` | Sends a charge from the flag through the underline and letters |
 | `ProtocolGoldPattern.*` | Gold letter shimmer, sparkles, and breathing accents |
 | `LetterDominoPattern.*` | Activates and clears letters forward and backward |
-| `PowerUpPattern.*` | Flicker, progress bar, sequential lock-on, and final flash |
+| `PowerUpPattern.*` | Flicker, progress bar, sequential lock-on, and final full-sign state |
 | `BlackoutRevealPattern.*` | Clockwise synchronized blackout and reveal |
-| `CometLettersPattern.*` | Runs a colored comet clockwise around each letter |
+| `CometLettersPattern.*` | Runs two clockwise comets per letter; the second leaves its rainbow trail illuminated |
 | `FadeOutPattern.*` | Smoothly fades the entire installation to black between shows |
 | `NewPatternsShow.*` | Sequences the eight new patterns as a single show |
 | `LetterPatterns.*` | Shared letter fills, palette rotation, and shifting |
@@ -107,7 +107,7 @@ At startup, the controller runs both programmed shows:
 
 After startup, all three shows rotate on a ten-minute timer. To skip the new-pattern preview at power-up while keeping it in the timed rotation, set `RUN_NEW_PATTERN_PREVIEW_AT_STARTUP` to `false` in `Config.h`.
 
-The letter strips are assumed to advance clockwise as their pixel indices increase. Blackout Reveal and Comet Letters begin at each strip's installed pixel `0`; no physical or software start-point alignment is required.
+The letter strips are assumed to advance clockwise as their pixel indices increase. Blackout Reveal and Comet Letters begin at each strip's installed pixel `0`; no physical or software start-point alignment is required. Whenever a coordinated pattern grows the underline from partial or dark to fully illuminated, the fill travels from the sign's right edge toward its left edge. Letter Domino remains the intentional exception because each underline segment is coupled directly to its letter's reading-order hit.
 
 The new-pattern show uses a structured random sequence:
 
@@ -120,9 +120,9 @@ The new-pattern show uses a structured random sequence:
 
 Every kinetic pattern plays exactly once per cycle. The shuffle also prevents the last kinetic pattern from one cycle from becoming the first kinetic pattern in the next cycle. Fade Out leaves the installation fully black so the next Power-Up has a clean starting point.
 
-The coordinated patterns deliberately vary their color treatment: Power-Up and Blackout Reveal use full-sign rainbows; Typewriter uses one consistent hue for an entire word and advances to a different hue on its next run; Signal Relay and Letter Domino rotate colors as they travel; every Comet Letter traces the same cohesive rainbow progression around its clockwise path; and Protocol Gold keeps its gold/white signature. Fade Out preserves whichever colors are already showing as it takes the sign to black.
+The coordinated patterns deliberately vary their color treatment: Power-Up and Blackout Reveal use full-sign rainbows; Typewriter uses one consistent hue for an entire word and advances to a different hue on its next run; Signal Relay and Letter Domino rotate colors as they travel; every Comet Letter traces the same cohesive rainbow progression twice around its clockwise path, with a dark reset before the second pass accumulates into the completed letter. Comet Letters keeps its full underline and flag on one solid matching accent color, then advances that color on its next run. Protocol Gold fades smoothly from the previous pattern into its bright gold underline and white sparkles over a full-brightness background color that changes between runs. Fade Out preserves whichever colors are already showing as it takes the sign to black.
 
-All coordinated-pattern delays pass through `PatternTiming.h`, where `PATTERN_TIME_SCALE_PERCENT` is set to `110`. This makes the complete show 10% slower while carrying fractional milliseconds between short animation frames so their rounding does not change the overall speed.
+All coordinated-pattern delays pass through `PatternTiming.h`, where `PATTERN_TIME_SCALE_PERCENT` is set to `120`. This makes the complete show 20% slower than the original timing while carrying fractional milliseconds between short animation frames so their rounding does not change the overall speed.
 
 ## Uploading
 
@@ -198,7 +198,7 @@ CXX=g++ ./visualizer/run_visualizer.sh
 
 Each letter is drawn as a block-letter exterior plus an interior run, and the mailbox flag includes its vertical pole and square top, based on the installed sign. Exact LED counts and buffer offsets come from the firmware; the visualizer distributes each letter's pixels between its two paths in proportion to their drawn lengths because the physical per-strip counts and start coordinates are not yet recorded. Colors, timing, fades, and pattern sequencing come from the firmware itself.
 
-Legacy First Show and Legacy Second Show are exposed through thin firmware wrappers and recorded by the same simulator executable as the coordinated patterns. Palette and Dance remain in Legacy First Show; Color Drop and Disco Strobe remain in Legacy Second Show, so the coordinated show does not duplicate them. The simulated FastLED interval timers preserve the legacy 1-second and 10-second color changes. The legacy shows retain their original timing; the coordinated-pattern `110%` timing scale does not alter them. Legacy Second Show produces a roughly 20 MB local recording because it renders at 100 frames per second for one minute. Generated recordings stay inside the ignored `visualizer/generated/` directory.
+Legacy First Show and Legacy Second Show are exposed through thin firmware wrappers and recorded by the same simulator executable as the coordinated patterns. Each legacy entry crossfades through 24 frames into its first intended look, preserving the configured hardware brightness while avoiding a hard cut. Palette and Dance remain in Legacy First Show; Color Drop and Disco Strobe remain in Legacy Second Show, so the coordinated show does not duplicate them. Color Drop sends each falling light through the complete flag path from LED `142` through LED `0`, so the pole and square participate in the same animation. Legacy First uses a `49%` time scale after two successive 30% speed increases; Legacy Second uses a `70%` time scale. Each show's total window and animation delays are scaled together, while Legacy Second also scales its frame interval and color-change timers, so the complete content plays faster instead of ending early. The coordinated-pattern timing scale does not alter them. Legacy Second Show produces a large local recording because it retains roughly 6,000 animation frames. Generated recordings stay inside the ignored `visualizer/generated/` directory.
 
 ### Troubleshooting
 
