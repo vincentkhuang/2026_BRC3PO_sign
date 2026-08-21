@@ -96,7 +96,7 @@ FastLED hue examples are approximately `0` red, `85` green, and `170` blue. Powe
 
 | Path | Purpose |
 | --- | --- |
-| `2026_BRC3PO_sign.ino` | Arduino `setup()` and `loop()` |
+| `BRC3PO_2018_Master.ino` | Arduino `setup()` and `loop()` |
 | `src/core/` | Configuration, hardware, controls, layout, and transitions |
 | `src/patterns/` | Individual patterns and shared pattern helpers |
 | `src/shows/` | Coordinated/legacy shows and the endless scheduler |
@@ -107,7 +107,7 @@ Every letter begins at pixel `0` on the bottom-left of its exterior strip and ad
 ## Upload to the Teensy
 
 1. Install Teensy support, [FastLED](https://github.com/FastLED/FastLED), and [OctoWS2811](https://github.com/PaulStoffregen/OctoWS2811).
-2. Keep `2026_BRC3PO_sign.ino` beside the complete `src/` directory and open the sketch.
+2. Keep `BRC3PO_2018_Master.ino` beside the complete `src/` directory and open the sketch.
 3. Select the Teensy board and USB port, then confirm the configured strip counts, offsets, and inputs.
 4. Compile and upload.
 
