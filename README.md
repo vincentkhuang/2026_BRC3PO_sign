@@ -115,6 +115,10 @@ Every letter begins at pixel `0` on the bottom-left of its exterior strip and ad
 
 Use a properly sized external LED power supply; do not power the installation from the Teensy's USB connection. The visualizer validates software output, but final color, current draw, timing, and physical direction must be checked on the sign.
 
+## Continuous rainbow-comet test branch
+
+The `test/rainbow-comet-loop` branch replaces the normal scheduler with the rainbow comet pattern. After the final letter completes, Arduino calls `loop()` again and immediately restarts the pattern. The production show sequence on `main` is unchanged.
+
 ## License
 
 No license has been selected yet.
