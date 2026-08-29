@@ -89,10 +89,10 @@ In `src/core/Config.h`, change either switch to `false` and set its fixed replac
 constexpr bool ENABLE_COLOR_KNOB = true;
 constexpr bool ENABLE_BRIGHTNESS_KNOB = true;
 constexpr uint8_t FIXED_LETTER_HUE = 0;  // 0-255
-constexpr uint8_t FIXED_BRIGHTNESS = 96; // 0-240
+constexpr uint8_t FIXED_BRIGHTNESS = 240; // 0-240
 ```
 
-FastLED hue examples are approximately `0` red, `85` green, and `170` blue. Power down the installation before disconnecting or rewiring a knob.
+When the brightness knob is disabled, the fixed brightness is applied during startup as well as subsequent control updates. FastLED hue examples are approximately `0` red, `85` green, and `170` blue. Power down the installation before disconnecting or rewiring a knob.
 
 ## Code layout
 
