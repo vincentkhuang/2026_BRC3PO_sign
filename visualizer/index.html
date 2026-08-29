@@ -447,7 +447,8 @@
   }
 
   function renderSequenceQueue() {
-    sequenceList.replaceChildren();
+    // Avoid Element.replaceChildren(), which is missing from older browsers.
+    sequenceList.textContent = "";
     if (sequenceQueue.length === 0) {
       const empty = document.createElement("li");
       empty.className = "queue-empty";
@@ -811,7 +812,8 @@
         });
       });
       const catalogById = new Map(patternCatalog.map(pattern => [pattern.id, pattern]));
-      const defaultItems = manifest.defaultSequence?.items || [];
+      const defaultSequence = manifest.defaultSequence || {};
+      const defaultItems = defaultSequence.items || [];
       sequenceQueue = defaultItems.map(item => {
         const pattern = catalogById.get(item.id);
         return pattern ? {
@@ -820,7 +822,7 @@
           repeats: Math.max(1, item.repeats || 1)
         } : null;
       }).filter(Boolean);
-      sequenceLoopInput.checked = Boolean(manifest.defaultSequence?.loop);
+      sequenceLoopInput.checked = Boolean(defaultSequence.loop);
       renderSequenceQueue();
       return loadPattern(manifest.patterns[0].id);
     })

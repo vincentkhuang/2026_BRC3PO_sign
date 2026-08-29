@@ -8,7 +8,7 @@ The visualizer is the easiest way to explore the project. It compiles the real p
 
 ### Run it
 
-Requirements: macOS or Linux, Python 3, and a C++17 compiler such as `clang++`. On a new Mac, install the compiler with `xcode-select --install`.
+Requirements: macOS or Linux, Python 3, a C++17 compiler such as `clang++`, and Chrome 55 or newer. On a new Mac, install the compiler with `xcode-select --install`.
 
 ```sh
 cd /path/to/2026_BRC3PO_sign
@@ -35,6 +35,8 @@ CXX=g++ ./visualizer/run_visualizer.sh    # Select another C++ compiler
 ```
 
 If frames do not load, confirm the address begins with `http://127.0.0.1` and rerun the loader. If the port is occupied, use the `PORT` option above. Generated recordings are ignored by Git and live in `visualizer/generated/`.
+
+If Chrome reports `Uncaught SyntaxError: Unexpected token '.'` and the pattern menus remain empty, update to this version of the visualizer. Its browser script intentionally avoids optional chaining and `Element.replaceChildren()`, which are unavailable in older Chrome releases.
 
 The drawing approximates each block letter's exterior/interior pixel split because those individual counts have not been measured. Firmware LED counts, colors, timing, fades, and sequence logic remain code-accurate.
 
