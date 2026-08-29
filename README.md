@@ -92,7 +92,7 @@ constexpr uint8_t FIXED_LETTER_HUE = 0;  // 0-255
 constexpr uint8_t FIXED_BRIGHTNESS = 240; // 0-240
 ```
 
-When the brightness knob is disabled, the fixed brightness is applied during startup as well as subsequent control updates. FastLED hue examples are approximately `0` red, `85` green, and `170` blue. Power down the installation before disconnecting or rewiring a knob.
+The controller always starts at brightness `240`. If the brightness knob is enabled, the next control read replaces that startup value with the knob setting; if disabled, brightness remains at `FIXED_BRIGHTNESS`. FastLED hue examples are approximately `0` red, `85` green, and `170` blue. Power down the installation before disconnecting or rewiring a knob.
 
 ## Code layout
 

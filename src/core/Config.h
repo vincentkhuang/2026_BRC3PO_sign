@@ -45,7 +45,6 @@ constexpr int U_START = 5 * NUM_LEDS_PER_STRIP;
 constexpr int O_START = 6 * NUM_LEDS_PER_STRIP;
 constexpr int P_START = 7 * NUM_LEDS_PER_STRIP;
 
-constexpr uint8_t INITIAL_BRIGHTNESS =
-    ENABLE_BRIGHTNESS_KNOB ? 96 : FIXED_BRIGHTNESS;
+constexpr uint8_t INITIAL_BRIGHTNESS = 240;
 constexpr uint8_t MAX_BRIGHTNESS = 240;
 constexpr uint16_t IDLE_FRAME_LENGTH_MS = 100;
