@@ -108,7 +108,7 @@ Every letter begins at pixel `0` on the bottom-left of its exterior strip and ad
 
 ## Upload to the Teensy
 
-1. Install Teensy support, [FastLED](https://github.com/FastLED/FastLED), and [OctoWS2811](https://github.com/PaulStoffregen/OctoWS2811).
+1. Install Teensy support. Use the FastLED and OctoWS2811 copies bundled with the Teensy platform; separately installed copies can override the compatible bundled versions and produce duplicate-library warnings.
 2. Keep `BRC3PO_2018_Master.ino` beside the complete `src/` directory and open the sketch.
 3. Select the Teensy board and USB port, then confirm the configured strip counts, offsets, and inputs.
 4. Compile and upload.
