@@ -9,8 +9,6 @@
 
 #include "Arduino.h"
 
-#define FASTLED_USING_NAMESPACE
-
 class SimEveryNMillis {
  public:
   explicit SimEveryNMillis(uint32_t periodMillis)

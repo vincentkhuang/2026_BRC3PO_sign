@@ -6,7 +6,9 @@
 
 #include "Config.h"
 
+#ifdef FASTLED_USING_NAMESPACE
 FASTLED_USING_NAMESPACE
+#endif
 
 extern CRGBArray<NUM_LEDS> leds;
 
@@ -23,4 +25,3 @@ extern CRGBPalette16 currentPalette;
 extern TBlendType currentBlending;
 
 void initLedHardware();
-
