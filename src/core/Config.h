@@ -22,7 +22,7 @@ constexpr uint8_t POWER_PIN = 13;
 
 // OctoWS2811 allocates the same length for all eight output channels.
 constexpr int NUM_STRIPS = 8;
-constexpr int NUM_LEDS_PER_STRIP = 144;
+constexpr int NUM_LEDS_PER_STRIP = 256;
 constexpr int NUM_LEDS = NUM_STRIPS * NUM_LEDS_PER_STRIP;
 
 // Physical LED counts

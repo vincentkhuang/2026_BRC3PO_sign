@@ -115,6 +115,23 @@ Every letter begins at pixel `0` on the bottom-left of its exterior strip and ad
 
 Use a properly sized external LED power supply; do not power the installation from the Teensy's USB connection. The visualizer validates software output, but final color, current draw, timing, and physical direction must be checked on the sign.
 
+## Strip-count diagnostic branch
+
+The `test/strip-led-counter` branch replaces the normal show loop with a wiring and pixel-count diagnostic. All eight OctoWS2811 outputs transmit 256 pixels. Pixels alternate in blocks of 10 on and 10 off, starting with pixels 0–9 lit.
+
+| Logical strip | Test color |
+| --- | --- |
+| B | Red |
+| R | Orange |
+| C | Yellow |
+| 3 | Green |
+| P | Blue |
+| O | Purple |
+| Underline | White |
+| Flag | Rainbow |
+
+The LED buffer contains all `8 * 256` pixels. Do not intentionally write past its bounds; out-of-range writes can corrupt memory on the Teensy.
+
 ## License
 
 No license has been selected yet.
