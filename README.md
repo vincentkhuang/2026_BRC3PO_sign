@@ -89,10 +89,10 @@ In `src/core/Config.h`, change either switch to `false` and set its fixed replac
 constexpr bool ENABLE_COLOR_KNOB = true;
 constexpr bool ENABLE_BRIGHTNESS_KNOB = false;
 constexpr uint8_t FIXED_LETTER_HUE = 0;  // 0-255
-constexpr uint8_t FIXED_BRIGHTNESS = 140; // 0-240
+constexpr uint8_t FIXED_BRIGHTNESS = 255; // 0-255
 ```
 
-The controller starts at brightness `140`. The brightness knob is disabled, so control reads keep brightness at `FIXED_BRIGHTNESS`. Set `ENABLE_BRIGHTNESS_KNOB` to `true` to restore knob control; the next control read will then replace the startup value with the knob setting. FastLED hue examples are approximately `0` red, `85` green, and `170` blue. Power down the installation before disconnecting or rewiring a knob.
+The controller starts at FastLED's maximum brightness, `255`. The brightness knob is disabled, so control reads keep brightness at `FIXED_BRIGHTNESS`. Set `ENABLE_BRIGHTNESS_KNOB` to `true` to restore knob control; the next control read will then replace the startup value with the knob setting. FastLED hue examples are approximately `0` red, `85` green, and `170` blue. Power down the installation before disconnecting or rewiring a knob.
 
 ## Code layout
 
