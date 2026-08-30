@@ -9,9 +9,9 @@ constexpr uint8_t POT_BRIGHTNESS = 5;
 // Set either switch to false to ignore that physical knob. The matching
 // fixed value below is used whenever a knob is disabled.
 constexpr bool ENABLE_COLOR_KNOB = true;
-constexpr bool ENABLE_BRIGHTNESS_KNOB = true;
+constexpr bool ENABLE_BRIGHTNESS_KNOB = false;
 constexpr uint8_t FIXED_LETTER_HUE = 0;
-constexpr uint8_t FIXED_BRIGHTNESS = 240;
+constexpr uint8_t FIXED_BRIGHTNESS = 140;
 
 // Rest in Idle Scanner for this long after power-up and after every show.
 // The scheduler then advances Coordinated -> Legacy First -> Legacy Second.
@@ -45,6 +45,6 @@ constexpr int U_START = 5 * NUM_LEDS_PER_STRIP;
 constexpr int O_START = 6 * NUM_LEDS_PER_STRIP;
 constexpr int P_START = 7 * NUM_LEDS_PER_STRIP;
 
-constexpr uint8_t INITIAL_BRIGHTNESS = 240;
+constexpr uint8_t INITIAL_BRIGHTNESS = 140;
 constexpr uint8_t MAX_BRIGHTNESS = 240;
 constexpr uint16_t IDLE_FRAME_LENGTH_MS = 100;
