@@ -19,7 +19,7 @@ void setSynchronizedLetterPixel(int progress, bool reveal) {
 }
 
 void setSynchronizedFlagPixels(int progress, bool reveal) {
-  // The flag is longer than the 141-step letter sweep, so some animation
+  // The flag is longer than the longest-letter sweep, so some animation
   // steps must advance two flag pixels. Covering the complete normalized
   // range prevents skipped pixels from lingering during blackout or popping
   // on only when the reveal finishes.

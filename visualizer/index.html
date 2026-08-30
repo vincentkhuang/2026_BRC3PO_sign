@@ -208,15 +208,19 @@
 
 <script>
 (() => {
-  const PIXEL_COUNTS = [141, 119, 79, 94, 104, 128];
+  const PIXEL_COUNTS = [120, 114, 86, 87, 100, 109];
+  // A zero marks a continuous strand without a separate interior segment.
+  const EXTERIOR_COUNTS = [60, 63, 0, 0, 0, 62];
   const PIXEL_STARTS = [432, 288, 144, 0, 1008, 864];
   const LABELS = ["B", "R", "C", "3", "P", "O"];
   const FLAG_START = 576;
-  const FLAG_COUNT = 143;
+  const FLAG_COUNT = 138;
   const FLAG_POLE_X = 62;
   const FLAG_RIGHT_X = 142;
   const UNDERLINE_START = 720;
-  const UNDERLINE_COUNT = 126;
+  const UNDERLINE_SIDE_1_COUNT = 68;
+  const UNDERLINE_SIDE_2_COUNT = 72;
+  const UNDERLINE_COUNT = UNDERLINE_SIDE_1_COUNT + UNDERLINE_SIDE_2_COUNT;
   const HEADER_BYTES = 24;
 
   const canvas = document.getElementById("sign");
@@ -313,11 +317,11 @@
         {x:.79,y:.84},{x:.69,y:.95},{x:.5,y:1},{x:.08,y:1}
       ]],
       inner: [[
-        {x:.27,y:.13},{x:.47,y:.13},{x:.57,y:.18},{x:.57,y:.32},
-        {x:.47,y:.38},{x:.27,y:.38},{x:.27,y:.13}
+        {x:.27,y:.87},{x:.27,y:.61},{x:.48,y:.61},{x:.59,y:.67},
+        {x:.59,y:.82},{x:.48,y:.87},{x:.27,y:.87}
       ], [
-        {x:.27,y:.61},{x:.48,y:.61},{x:.59,y:.67},{x:.59,y:.82},
-        {x:.48,y:.87},{x:.27,y:.87},{x:.27,y:.61}
+        {x:.27,y:.38},{x:.27,y:.13},{x:.47,y:.13},{x:.57,y:.18},
+        {x:.57,y:.32},{x:.47,y:.38},{x:.27,y:.38}
       ]]
     };
     if (label === "R") return {
@@ -327,8 +331,8 @@
         {x:.36,y:.53},{x:.27,y:.53},{x:.27,y:1},{x:.08,y:1}
       ]],
       inner: [[
-        {x:.27,y:.13},{x:.46,y:.13},{x:.56,y:.18},{x:.56,y:.33},
-        {x:.46,y:.39},{x:.27,y:.39},{x:.27,y:.13}
+        {x:.27,y:.39},{x:.27,y:.13},{x:.46,y:.13},{x:.56,y:.18},
+        {x:.56,y:.33},{x:.46,y:.39},{x:.27,y:.39}
       ]]
     };
     if (label === "C") return {
@@ -365,7 +369,7 @@
     };
     return {
       outer: [arcPoints(.5, .5, .48, .5, Math.PI * .75, Math.PI * 2.75, 72)],
-      inner: [arcPoints(.5, .5, .29, .35, -Math.PI / 2, Math.PI * 1.5, 56)]
+      inner: [arcPoints(.5, .5, .29, .35, Math.PI / 2, Math.PI * 2.5, 56)]
     };
   }
 
@@ -400,19 +404,29 @@
       })));
       const outerPaths = scalePaths(groups.outer);
       const innerPaths = scalePaths(groups.inner);
-      const outerLength = outerPaths.reduce((sum, path) => sum + pathLength(path), 0);
-      const innerLength = innerPaths.reduce((sum, path) => sum + pathLength(path), 0);
-      const outerCount = Math.max(2, Math.round(
-        PIXEL_COUNTS[index] * outerLength / (outerLength + innerLength)
-      ));
-      const innerCount = PIXEL_COUNTS[index] - outerCount;
-      const samples = [
-        ...samplePathGroup(outerPaths, outerCount),
-        ...samplePathGroup(innerPaths, innerCount)
-      ];
+      const exteriorCount = EXTERIOR_COUNTS[index];
+      let samples;
+      if (exteriorCount > 0) {
+        const interiorCount = PIXEL_COUNTS[index] - exteriorCount;
+        samples = [
+          ...samplePathGroup(outerPaths, exteriorCount),
+          ...samplePathGroup(innerPaths, interiorCount)
+        ];
+      } else {
+        // C, 3, and P each use one continuous strand across the whole glyph.
+        samples = samplePathGroup([...outerPaths, ...innerPaths], PIXEL_COUNTS[index]);
+      }
       samples.forEach((point, pixel) => coordinateMap.set(PIXEL_STARTS[index] + pixel, point));
-      startMarkers.push({ pixel: PIXEL_STARTS[index], label: "0" });
-      startMarkers.push({ pixel: PIXEL_STARTS[index] + outerCount, label: "IN" });
+      startMarkers.push({
+        pixel: PIXEL_STARTS[index],
+        label: exteriorCount > 0 ? "OUT 0" : "0"
+      });
+      if (exteriorCount > 0) {
+        startMarkers.push({
+          pixel: PIXEL_STARTS[index] + exteriorCount,
+          label: "IN 0"
+        });
+      }
     });
 
     for (let pixel = 0; pixel < UNDERLINE_COUNT; pixel += 1) {
@@ -436,6 +450,10 @@
     });
     startMarkers.push({ pixel: FLAG_START, label: "0" });
     startMarkers.push({ pixel: UNDERLINE_START, label: "0" });
+    startMarkers.push({
+      pixel: UNDERLINE_START + UNDERLINE_SIDE_1_COUNT,
+      label: "SIDE 2"
+    });
     return { coordinateMap, startMarkers };
   }
 

@@ -38,7 +38,7 @@ If frames do not load, confirm the address begins with `http://127.0.0.1` and re
 
 If Chrome reports `Uncaught SyntaxError: Unexpected token '.'` and the pattern menus remain empty, update to this version of the visualizer. Its browser script intentionally avoids optional chaining and `Element.replaceChildren()`, which are unavailable in older Chrome releases.
 
-The drawing approximates each block letter's exterior/interior pixel split because those individual counts have not been measured. Firmware LED counts, colors, timing, fades, and sequence logic remain code-accurate.
+The drawing uses the measured strand and segment lengths. Its block-letter geometry remains a visual approximation; firmware LED counts, colors, timing, fades, and sequence logic are code-accurate.
 
 ## Live show sequence
 
@@ -66,18 +66,18 @@ Required hardware:
 - Suitable external LED power supply with a common ground
 - Optional hue and brightness potentiometers
 
-The controller reserves 144 pixels on each of eight channels. The installed sign uses 934 LEDs:
+The controller reserves 144 pixels on each of eight channels. The installed sign uses 894 LEDs:
 
-| Element | LEDs | Buffer offset |
-| --- | ---: | ---: |
-| `3` | 94 | 0 |
-| `C` | 79 | 144 |
-| `R` | 119 | 288 |
-| `B` | 141 | 432 |
-| Flag | 143 | 576 |
-| Underline | 126 | 720 |
-| `O` | 128 | 864 |
-| `P` | 104 | 1008 |
+| Element | Physical layout | LEDs | Buffer offset |
+| --- | --- | ---: | ---: |
+| `3` | Continuous | 87 | 0 |
+| `C` | Continuous | 86 | 144 |
+| `R` | 63 exterior + 51 interior | 114 | 288 |
+| `B` | 60 exterior + 60 interior | 120 | 432 |
+| Flag | Continuous | 138 | 576 |
+| Underline | 68 side 1 + 72 side 2 | 140 | 720 |
+| `O` | 62 exterior + 47 interior | 109 | 864 |
+| `P` | Continuous | 100 | 1008 |
 
 The color knob uses analog input 3, the brightness knob uses analog input 5, and pin 13 is the status LED. Physical wiring determines the channel offsets in `src/core/Config.h`.
 
@@ -104,7 +104,7 @@ The controller starts at brightness `140`. The brightness knob is disabled, so c
 | `src/shows/` | Coordinated/legacy shows and the endless scheduler |
 | `visualizer/` | Native recorder, simulation layer, browser UI, and recordings |
 
-Every letter begins at pixel `0` on the bottom-left of its exterior strip and advances clockwise. Coordinated timing is centralized in `src/patterns/PatternTiming.h`; legacy show timing remains independently scaled in `src/shows/Shows.cpp`.
+Every measured exterior and interior letter segment starts at its bottom-left corner. B, R, and O are stored exterior-first and interior-second in their channel buffers; C, 3, and P each use one continuous strand. Coordinated timing is centralized in `src/patterns/PatternTiming.h`; legacy show timing remains independently scaled in `src/shows/Shows.cpp`.
 
 ## Upload to the Teensy
 
