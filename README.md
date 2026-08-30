@@ -23,7 +23,7 @@ The loader rebuilds all recordings, starts `http://127.0.0.1:8765`, and opens it
 - **Show sequence** starts with the Teensy's exact six-part runtime order and loops endlessly by default.
 - Add, reorder, remove, or repeat queue entries to audition other combinations.
 - Playback speed and brightness affect only the preview, not the firmware.
-- Idle Scanner is shortened to one 25.48-second out-and-back sweep instead of its seven-minute live interval.
+- Idle Scanner is shortened to one 25.48-second out-and-back sweep instead of its four-minute live interval.
 
 Optional loader settings:
 
@@ -44,14 +44,14 @@ The drawing uses the measured strand and segment lengths. Its block-letter geome
 
 The Teensy begins in Idle Scanner and repeats this sequence without manual input:
 
-1. **Idle Scanner** — 7 minutes
+1. **Idle Scanner** — 4 minutes
 2. **Coordinated Full Show**
-3. **Idle Scanner** — 7 minutes
+3. **Idle Scanner** — 4 minutes
 4. **Legacy First Show**
-5. **Idle Scanner** — 7 minutes
+5. **Idle Scanner** — 4 minutes
 6. **Legacy Second Show**
 
-Each show receives a full seven-minute Idle Scanner interval after the preceding show finishes. Change `IDLE_SCANNER_DURATION_MS` in `src/core/Config.h` to adjust it.
+Each show receives a full four-minute Idle Scanner interval after the preceding show finishes. Change `IDLE_SCANNER_DURATION_MS` in `src/core/Config.h` to adjust it.
 
 The coordinated show runs Power-Up, Typewriter, a shuffled pass through Signal Relay, Letter Domino, and Comet Letters, then Blackout Reveal, Protocol Gold, and Fade Out. Every shuffled pattern runs once, and the shuffle avoids repeating the same pattern at the boundary between cycles.
 

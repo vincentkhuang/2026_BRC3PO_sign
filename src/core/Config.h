@@ -15,7 +15,7 @@ constexpr uint8_t FIXED_BRIGHTNESS = 140;
 
 // Rest in Idle Scanner for this long after power-up and after every show.
 // The scheduler then advances Coordinated -> Legacy First -> Legacy Second.
-constexpr unsigned long IDLE_SCANNER_DURATION_MS = 7UL * 60UL * 1000UL;
+constexpr unsigned long IDLE_SCANNER_DURATION_MS = 4UL * 60UL * 1000UL;
 
 // Teensy status LED
 constexpr uint8_t POWER_PIN = 13;
